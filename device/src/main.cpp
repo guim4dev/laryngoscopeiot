@@ -10,84 +10,18 @@
 #define LED_BUILTIN 2
 #define BUTTON_PIN 21
 // Replace with your network credentials
-const char *ssid = "TafuFi2";
-const char *password = "Exitoalegria1961";
+const char *ssid = "laringoscopiot";
+const char *password = "senhadopai";
 
 #define PART_BOUNDARY "123456789000000000000987654321"
 
 httpd_handle_t stream_httpd = NULL;
 
-// This project was tested with the AI Thinker Model, M5STACK PSRAM Model and M5STACK WITHOUT PSRAM
-#define CAMERA_MODEL_AI_THINKER
-// #define CAMERA_MODEL_M5STACK_PSRAM
-// #define CAMERA_MODEL_M5STACK_WITHOUT_PSRAM
-
-// Not tested with this model
-// #define CAMERA_MODEL_WROVER_KIT
-#if defined(CAMERA_MODEL_WROVER_KIT)
-#define PWDN_GPIO_NUM -1
-#define RESET_GPIO_NUM -1
-#define XCLK_GPIO_NUM 21
-#define SIOD_GPIO_NUM 26
-#define SIOC_GPIO_NUM 27
-
-#define Y9_GPIO_NUM 35
-#define Y8_GPIO_NUM 34
-#define Y7_GPIO_NUM 39
-#define Y6_GPIO_NUM 36
-#define Y5_GPIO_NUM 19
-#define Y4_GPIO_NUM 18
-#define Y3_GPIO_NUM 5
-#define Y2_GPIO_NUM 4
-#define VSYNC_GPIO_NUM 25
-#define HREF_GPIO_NUM 23
-#define PCLK_GPIO_NUM 22
-
-#elif defined(CAMERA_MODEL_M5STACK_PSRAM)
-#define PWDN_GPIO_NUM -1
-#define RESET_GPIO_NUM 15
-#define XCLK_GPIO_NUM 27
-#define SIOD_GPIO_NUM 25
-#define SIOC_GPIO_NUM 23
-
-#define Y9_GPIO_NUM 19
-#define Y8_GPIO_NUM 36
-#define Y7_GPIO_NUM 18
-#define Y6_GPIO_NUM 39
-#define Y5_GPIO_NUM 5
-#define Y4_GPIO_NUM 34
-#define Y3_GPIO_NUM 35
-#define Y2_GPIO_NUM 32
-#define VSYNC_GPIO_NUM 22
-#define HREF_GPIO_NUM 26
-#define PCLK_GPIO_NUM 21
-
-#elif defined(CAMERA_MODEL_M5STACK_WITHOUT_PSRAM)
-#define PWDN_GPIO_NUM -1
-#define RESET_GPIO_NUM 15
-#define XCLK_GPIO_NUM 27
-#define SIOD_GPIO_NUM 25
-#define SIOC_GPIO_NUM 23
-
-#define Y9_GPIO_NUM 19
-#define Y8_GPIO_NUM 36
-#define Y7_GPIO_NUM 18
-#define Y6_GPIO_NUM 39
-#define Y5_GPIO_NUM 5
-#define Y4_GPIO_NUM 34
-#define Y3_GPIO_NUM 35
-#define Y2_GPIO_NUM 17
-#define VSYNC_GPIO_NUM 22
-#define HREF_GPIO_NUM 26
-#define PCLK_GPIO_NUM 21
-
-#elif defined(CAMERA_MODEL_AI_THINKER)
 #define PWDN_GPIO_NUM 32
 #define RESET_GPIO_NUM -1
 #define XCLK_GPIO_NUM 0
 #define SIOD_GPIO_NUM 26
 #define SIOC_GPIO_NUM 27
-
 #define Y9_GPIO_NUM 35
 #define Y8_GPIO_NUM 34
 #define Y7_GPIO_NUM 39
@@ -99,10 +33,10 @@ httpd_handle_t stream_httpd = NULL;
 #define VSYNC_GPIO_NUM 25
 #define HREF_GPIO_NUM 23
 #define PCLK_GPIO_NUM 22
-#else
-#error "Camera model not selected"
-#endif
 
+// TODO: current implementation sends the whole image every time. It would be better to send only the changed parts.
+// we should also consider sending a lower resolution image to save bandwidth
+// and usgin HLS streaming for better performance on the client side
 static const char *_STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
 static const char *_STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
 static const char *_STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
@@ -255,12 +189,14 @@ void setupCamera()
     return;
   }
   // Wi-Fi connection
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-  }
+  // WiFi.begin(ssid, password);
+  // while (WiFi.status() != WL_CONNECTED)
+  // {
+  //   delay(500);
+  //   Serial.print(".");
+  // }
+  WiFi.mode(WIFI_AP);
+  WiFi.softAP(ssid, password);
   Serial.println("");
   Serial.println("WiFi connected");
 
@@ -304,6 +240,7 @@ void captureButtonClick()
 
 void loop()
 {
-  captureButtonClick();
+  // captureButtonClick();
+  delay(1);
   Serial.flush();
 }
