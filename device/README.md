@@ -1,6 +1,5 @@
 # Device do LaringoscópioT
 
-
 ## Desenvolvendo localmente
 
 ### Pré-requisitos:

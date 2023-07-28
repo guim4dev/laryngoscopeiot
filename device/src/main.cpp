@@ -1,5 +1,9 @@
 #include <Arduino.h>
-#define LED_BUILTIN 4
+#define LED_BUILTIN 2
+#define BUTTON_PIN 21
+
+int lastButtonState = HIGH;
+int currentButtonState;
 
 void setup()
 {
@@ -9,15 +13,26 @@ void setup()
   Serial.flush();
 
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP); // Button is connected to GND
+  Serial.println("Setup done");
+}
+
+void captureButtonClick()
+{
+  currentButtonState = digitalRead(BUTTON_PIN);
+  if (lastButtonState == LOW && currentButtonState == HIGH)
+  {
+    Serial.print("Initial button state: ");
+    Serial.println("Button Released");
+  }
+  else if (lastButtonState == HIGH && currentButtonState == LOW)
+    Serial.println("Button Pressed");
+
+  lastButtonState = currentButtonState;
 }
 
 void loop()
 {
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(5);
-  digitalWrite(LED_BUILTIN, LOW);
-
-  Serial.println("Waiting 5s...");
+  captureButtonClick();
   Serial.flush();
-  delay(5000);
 }
