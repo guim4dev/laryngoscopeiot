@@ -1,11 +1,25 @@
 <template>
-  <h1>{{ t("welcome") }}</h1>
+  <transition-group appear mode="out-in" name="fade">
+    <h1 key="loading-text" v-show="isLoading">{{ t("welcome") }}</h1>
+    <live-video
+      key="live-video"
+      v-show="!isLoading"
+      @liveVideoStarted="videoLoaded"
+    />
+  </transition-group>
 </template>
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
+import LiveVideo from "./components/LiveVideo.vue";
 import { useI18n } from "vue-i18n";
 const i18n = useI18n();
 const { t } = i18n;
+
+const isLoading = ref(true);
+const videoLoaded = () => {
+  console.log("Video loaded");
+  isLoading.value = false;
+};
 
 onMounted(() => {
   const userLanguage = navigator.language;
