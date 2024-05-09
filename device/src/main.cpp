@@ -7,11 +7,16 @@
 #include "soc/soc.h"          //disable brownout problems
 #include "soc/rtc_cntl_reg.h" //disable brownout problems
 #include "esp_http_server.h"
-#define LED_BUILTIN 2
-#define BUTTON_PIN 21
+#define CAMERA_MODEL_AI_THINKER
+
 // Replace with your network credentials
 const char *ssid = "laringoscopiot";
 const char *password = "senhadopai";
+
+#define LED_BUILTIN 4
+#define BUTTON_PIN 2
+#define PRIMARY_FORCE_SENSOR_PIN 12
+#define SECONDARY_FORCE_SENSOR_PIN 13
 
 #define PART_BOUNDARY "123456789000000000000987654321"
 
@@ -36,7 +41,7 @@ httpd_handle_t stream_httpd = NULL;
 
 // TODO: current implementation sends the whole image every time. It would be better to send only the changed parts.
 // we should also consider sending a lower resolution image to save bandwidth
-// and usgin HLS streaming for better performance on the client side
+// and using HLS streaming for better performance on the client side
 static const char *_STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
 static const char *_STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
 static const char *_STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
@@ -188,15 +193,6 @@ void setupCamera()
     Serial.printf("Camera init failed with error 0x%x", err);
     return;
   }
-  // Wi-Fi connection
-  // WiFi.begin(ssid, password);
-  // while (WiFi.status() != WL_CONNECTED)
-  // {
-  //   delay(500);
-  //   Serial.print(".");
-  // }
-  WiFi.mode(WIFI_AP);
-  WiFi.softAP(ssid, password);
   Serial.println("");
   Serial.println("WiFi connected");
 
@@ -209,38 +205,94 @@ void setupCamera()
 
 void setupButton()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
   pinMode(BUTTON_PIN, INPUT_PULLUP); // Button is connected to GND
+}
+
+void setupForceSensors()
+{
+  pinMode(PRIMARY_FORCE_SENSOR_PIN, INPUT);
+  // uncomment when connected secondary force sensor pin
+  // pinMode(SECONDARY_FORCE_SENSOR_PIN, INPUT);
+}
+
+void setupWifi()
+{
+  // Wi-Fi connection
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(2000);
+    digitalWrite(LED_BUILTIN, LOW);
+    Serial.print(".");
+  }
+
+  // own Wifi server mode
+  // WiFi.mode(WIFI_AP);
+  // WiFi.softAP(ssid, password);
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+void blinkThrice() {
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(1000);
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(1000);
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(1000);
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(1000);
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(1000);
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(1000);
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 void setup()
 {
   Serial.begin(115200);
   Serial.setDebugOutput(true);
+  pinMode(LED_BUILTIN, OUTPUT);
+
+  blinkThrice();
   Serial.println("Setup starting...");
+  
+  setupWifi();
   setupButton();
   setupCamera();
-  Serial.flush();
   Serial.println("Setup done");
+  Serial.flush();
 }
 
 void captureButtonClick()
 {
-  currentButtonState = digitalRead(BUTTON_PIN);
-  if (lastButtonState == LOW && currentButtonState == HIGH)
-  {
-    Serial.print("Initial button state: ");
-    Serial.println("Button Released");
-  }
-  else if (lastButtonState == HIGH && currentButtonState == LOW)
-    Serial.println("Button Pressed");
+  int buttonPressed = digitalRead(BUTTON_PIN);
+  Serial.print("Button pressed value: ");
+  Serial.println(buttonPressed);
+}
 
-  lastButtonState = currentButtonState;
+void captureForceSensors()
+{
+  int primaryForceSensorValue = analogRead(PRIMARY_FORCE_SENSOR_PIN);
+  // int secondaryForceSensorValue = analogRead(SECONDARY_FORCE_SENSOR_PIN);
+  Serial.print("Primary force sensor value: ");
+  Serial.println(primaryForceSensorValue);
+  // Serial.print("Secondary force sensor value: ");
+  // Serial.println(secondaryForceSensorValue);
 }
 
 void loop()
 {
-  // captureButtonClick();
   delay(1);
+  captureButtonClick();
+  captureForceSensors();
+  Serial.println("Looping...");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
   Serial.flush();
 }

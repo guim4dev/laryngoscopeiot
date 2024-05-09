@@ -1,3 +1,3 @@
 export default {
-  deviceUrl: "http://192.168.4.1",
+  deviceUrl: "http://192.168.0.219",
 };

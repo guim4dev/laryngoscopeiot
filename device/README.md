@@ -26,5 +26,17 @@ Agora, a placa está em modo de bootloader - onde você vai conseguir fazer o up
 Pronto! Seu programa está rodando na placa ESP32-CAM :)
 Note que esse processo é necessário sempre que quiser subir uma alteração do seu código para a placa.
 
+#### Boas referencias
 
-Pré-requisitos
+https://randomnerdtutorials.com/esp32-cam-ai-thinker-pinout/
+https://esp32io.com/tutorials/esp32-force-sensor
+
+#### Sumariozao:
+
+Portas disponiveis para captura de dados:
+
+GPIO 2, GPIO 12, GPIO 13
+
+GPIO 2 - Interruptor
+GPIO 12 - Force Sensor 1
+GPIO 13 - Force Sensor 2
