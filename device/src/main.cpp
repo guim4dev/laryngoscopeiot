@@ -237,9 +237,13 @@ void setupWifi()
   Serial.println(WiFi.localIP());
 }
 
-void blinkThrice() {
-  digitalWrite(LED_BUILTIN, LOW);
+void blinkOnce() {
+  digitalWrite(LED_BUILTIN, HIGH);
   delay(1000);
+  digitalWrite(LED_BUILTIN, LOW);
+}
+
+void blinkThrice() {
   digitalWrite(LED_BUILTIN, HIGH);
   delay(1000);
   digitalWrite(LED_BUILTIN, LOW);
@@ -265,15 +269,20 @@ void setup()
   setupWifi();
   setupButton();
   setupCamera();
+  setupForceSensors();
   Serial.println("Setup done");
   Serial.flush();
 }
 
-void captureButtonClick()
+void checkIfPressingTeeth()
 {
   int buttonPressed = digitalRead(BUTTON_PIN);
-  Serial.print("Button pressed value: ");
-  Serial.println(buttonPressed);
+  if (buttonPressed == LOW)
+  {
+    Serial.println("Button pressed. STOP TOUCHING THE TEETH!!!!!");
+  } else {
+    Serial.println("Button not pressed. Youre doing fine :D.");
+  }
 }
 
 void captureForceSensors()
@@ -288,8 +297,9 @@ void captureForceSensors()
 
 void loop()
 {
-  delay(1);
-  captureButtonClick();
+  delay(1000);
+  blinkOnce();
+  checkIfPressingTeeth();
   captureForceSensors();
   Serial.println("Looping...");
   Serial.print("IP address: ");
