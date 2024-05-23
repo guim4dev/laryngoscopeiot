@@ -149,8 +149,6 @@ void setupCamera()
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); // disable brownout detector
 
   Serial.begin(115200);
-  Serial.setDebugOutput(false);
-
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -173,18 +171,18 @@ void setupCamera()
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
 
-  // if (psramFound())
-  // {
+  if (psramFound())
+  {
   config.frame_size = FRAMESIZE_XGA;
   config.jpeg_quality = 4;
   config.fb_count = 24;
-  // }
-  // else
-  // {
-  //   config.frame_size = FRAMESIZE_SVGA;
-  //   config.jpeg_quality = 12;
-  //   config.fb_count = 1;
-  // }
+  }
+  else
+  {
+    config.frame_size = FRAMESIZE_SVGA;
+    config.jpeg_quality = 12;
+    config.fb_count = 1;
+  }
 
   // Camera init
   esp_err_t err = esp_camera_init(&config);
@@ -197,7 +195,7 @@ void setupCamera()
   Serial.println("WiFi connected");
 
   Serial.print("Camera Stream Ready! Go to: http://");
-  Serial.print(WiFi.localIP());
+  Serial.println(WiFi.localIP());
 
   // Start streaming web server
   startCameraServer();
@@ -206,13 +204,6 @@ void setupCamera()
 void setupButton()
 {
   pinMode(BUTTON_PIN, INPUT_PULLUP); // Button is connected to GND
-}
-
-void setupForceSensors()
-{
-  pinMode(PRIMARY_FORCE_SENSOR_PIN, INPUT);
-  // uncomment when connected secondary force sensor pin
-  // pinMode(SECONDARY_FORCE_SENSOR_PIN, INPUT);
 }
 
 void setupWifi()
@@ -266,10 +257,9 @@ void setup()
   blinkThrice();
   Serial.println("Setup starting...");
   
-  setupWifi();
+  // setupWifi();
   setupButton();
-  setupCamera();
-  setupForceSensors();
+  // setupCamera();
   Serial.println("Setup done");
   Serial.flush();
 }
@@ -302,7 +292,7 @@ void loop()
   checkIfPressingTeeth();
   captureForceSensors();
   Serial.println("Looping...");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+  // Serial.print("IP address: ");
+  // Serial.println(WiFi.localIP());
   Serial.flush();
 }
