@@ -30,6 +30,7 @@ Note que esse processo é necessário sempre que quiser subir uma alteração do
 
 https://randomnerdtutorials.com/esp32-cam-ai-thinker-pinout/
 https://esp32io.com/tutorials/esp32-force-sensor
+https://www.espboards.dev/blog/flash-any-esp32-with-esp32-cam-mb/
 
 #### Sumariozao:
 
