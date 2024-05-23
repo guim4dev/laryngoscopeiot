@@ -41,3 +41,9 @@ GPIO 2, GPIO 12, GPIO 13
 GPIO 2 - Interruptor
 GPIO 12 - Force Sensor 1
 GPIO 13 - Force Sensor 2
+
+#### Problema:
+
+GPIOs normalmente disponiveis sao apenas ADC1. Nao rola usar WiFi e fazer analogRead ao mesmo tempo
+https://github.com/esphome/issues/issues/1301#issuecomment-768408416
+https://forum.arduino.cc/t/how-esp32-cam-adc-analogread/932937
