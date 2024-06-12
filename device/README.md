@@ -31,6 +31,18 @@ Note que esse processo é necessário sempre que quiser subir uma alteração do
 https://randomnerdtutorials.com/esp32-cam-ai-thinker-pinout/
 https://esp32io.com/tutorials/esp32-force-sensor
 https://www.espboards.dev/blog/flash-any-esp32-with-esp32-cam-mb/
+https://www.tinytronics.nl/en/development-boards/accessories/adapter-boards/esp32-cam-mb-programmer-shield#:~:text=To%20put%20the%20ESP32%2DCAM,the%20code%20can%20be%20uploaded.
+
+##### Instrucoes Extras para Linux
+https://www.reddit.com/r/archlinux/comments/8j53dq/how_do_i_install_ch340_chip_drivers_on_arch/ (primeira thread - instalacao dos drivers CH340)
+
+TL;DR: 
+```sh
+> uname -r # checar versao do kernel
+> sudo pacman -S linux-headers dkms # escolher headers da versao do kernel 
+> yay -S i2c-ch341-dkms # instalar de fato o driver apontando para o header do kernel atual
+> reboot # necessario reboot para reiniciar a maquina com o novo driver
+``` 
 
 #### Sumariozao:
 
