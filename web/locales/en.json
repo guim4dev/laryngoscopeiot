@@ -10,5 +10,9 @@
     "failed_to_connect": "Failed to connect to sensors.",
     "connection_closed": "Connection to sensors closed.",
     "teeth_being_touched": "Teeth being touched! Be careful!"
+  },
+  "camera": {
+    "failed_to_connect": "Failed to connect to camera.",
+    "connection_closed": "Connection to camera closed."
   }
 }

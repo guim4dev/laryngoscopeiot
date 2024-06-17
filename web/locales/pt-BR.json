@@ -10,5 +10,9 @@
     "failed_to_connect": "Falha ao conectar aos sensores.",
     "connection_closed": "Conexão com os sensores fechada.",
     "teeth_being_touched": "Dentes sendo tocados! Tenha cuidado!"
+  },
+  "camera": {
+    "failed_to_connect": "Falha ao conectar à câmera.",
+    "connection_closed": "Conexão com a câmera fechada."
   }
 }
