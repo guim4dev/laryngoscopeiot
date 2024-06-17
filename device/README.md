@@ -28,10 +28,17 @@ Note que esse processo é necessário sempre que quiser subir uma alteração do
 
 #### Boas referencias
 
+<!-- PIO, ESP32CAM e outras coisas -->
+https://github.com/me-no-dev/ESPAsyncWebServer/#using-platformio
+https://microcontrollerslab.com/esp32-server-sent-events-sse-web-server-arduino-ide/#:~:text=Server%2DSent%20Events%20also%20known,changes%20on%20the%20server%20side.
 https://randomnerdtutorials.com/esp32-cam-ai-thinker-pinout/
 https://esp32io.com/tutorials/esp32-force-sensor
 https://www.espboards.dev/blog/flash-any-esp32-with-esp32-cam-mb/
 https://www.tinytronics.nl/en/development-boards/accessories/adapter-boards/esp32-cam-mb-programmer-shield#:~:text=To%20put%20the%20ESP32%2DCAM,the%20code%20can%20be%20uploaded.
+
+<!-- FSR -->
+https://esp32io.com/tutorials/esp32-force-sensor
+https://learn.adafruit.com/force-sensitive-resistor-fsr/overview
 
 ##### Instrucoes Extras para Linux
 https://www.reddit.com/r/archlinux/comments/8j53dq/how_do_i_install_ch340_chip_drivers_on_arch/ (primeira thread - instalacao dos drivers CH340)

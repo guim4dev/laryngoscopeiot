@@ -1,3 +1,14 @@
 {
-  "welcome": "Hello! Welcome to laryngoscopeIOT!"
+  "welcome": "Hello! Welcome to laryngoscopeIOT!",
+  "no_camera_src": "No camera source available.",
+  "no_sensors_src": "No sensors source available.",
+  "sensors_started": "Connected to sensors successfully",
+  "video_started": "Connected to camera successfully",
+  "sensors": {
+    "primary_force_label": "Primary Force",
+    "secondary_force_label": "Secondary Force",
+    "failed_to_connect": "Failed to connect to sensors.",
+    "connection_closed": "Connection to sensors closed.",
+    "teeth_being_touched": "Teeth being touched! Be careful!"
+  }
 }
