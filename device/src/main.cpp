@@ -223,22 +223,22 @@ void setupTeethButton()
   pinMode(TEETH_BUTTON_PIN, INPUT_PULLUP); // Button is connected to GND
 }
 
-String discordWebhookUrl = "http://eoovsvr9ws6bcrm.m.pipedream.net";
+String discordWebhookUrl = "http://windmill.x.guima.digital/api/w/admins/jobs/run/h/fb8aaa991d3a5b61?token=9WKmNJSBSeEgVCR1iq7D2taq3Ou3QXjl";
 
 void notifyDiscordWebhook(String content)
 {
   HTTPClient http;
   WiFiClient client;
 
-  http.begin(client, discordWebhookUrl.c_str());
+  http.begin(client, discordWebhookUrl);
   http.addHeader("Content-Type", "application/json");
 
-  String json = "{\"content\":\"" + content + "\"}";
+  String json = "{\"payload\":{\"content\":\"" + content + "\"}}";
   int httpCode = http.POST(json);
   http.end();
 
   Serial.println("Notified Discord webhook with content: " + content);
-  Serial.println("Discord webhook response: " + httpCode);
+  Serial.println("Discord webhook response: " + String(httpCode));
   Serial.flush();
 }
 
