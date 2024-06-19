@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
+#include "soc/soc.h"          //disable brownout problems
+#include "soc/rtc_cntl_reg.h" //disable brownout problems
 
 #include <Camera.h>
 #include <Sensors.h>
@@ -85,9 +87,9 @@ void startCpuDebug()
 
 void setup()
 {
+    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); // disable brownout detector
     Serial.begin(115200);
     Serial.setDebugOutput(true);
-    Serial.println("Blinking...");
     blinkNTimes(3);
     Serial.println("Setup starting...");
     // startCpuDebug();

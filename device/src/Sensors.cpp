@@ -18,19 +18,14 @@ void setupTeethButton()
     pinMode(TEETH_BUTTON_PIN, INPUT_PULLUP); // Button is connected to GND
 }
 
-int teethSensor = 0;
-void captureTeethSensorValue()
+struct SensorsCapture
 {
-    teethSensor = !digitalRead(TEETH_BUTTON_PIN); // button is connected to GND - so when pressed, it will read LOW.
-}
-
-struct ForceSensorsCapture
-{
-    int primaryForce;
-    int secondaryForce;
+    int primaryForce = 0;
+    int secondaryForce = 0;
+    int teethPressed = 0;
 } sensorsCapture;
 
-void captureForceSensorsValues()
+void captureSensorsValues()
 {
     // int primaryForceValue = analogRead(PRIMARY_FORCE_SENSOR_PIN);
     // int secondaryForceValue = analogRead(SECONDARY_FORCE_SENSOR_PIN);
@@ -39,11 +34,13 @@ void captureForceSensorsValues()
     // TMP: get random value between 0 and 4095
     int primaryForceValue = random(4095);
     int secondaryForceValue = random(4095);
+    int teethSensorValue = !digitalRead(TEETH_BUTTON_PIN);
     // Serial.print("Primary force sensor value: ");
     // Serial.println(primaryForceValue);
 
     sensorsCapture.primaryForce = primaryForceValue;
     sensorsCapture.secondaryForce = secondaryForceValue;
+    sensorsCapture.teethPressed = teethSensorValue;
 }
 
 AsyncWebServer eventsServer(80);
@@ -59,9 +56,8 @@ void sensorsTask(void *z)
     while (1)
     {
         safeDelay(sensors_delay);
-        captureTeethSensorValue();
-        captureForceSensorsValues();
-        String sensorData = "{\"primaryForce\": " + String(sensorsCapture.primaryForce) + ", \"secondaryForce\": " + String(sensorsCapture.secondaryForce) + ", \"teethPressed\": " + String(teethSensor) + " }";
+        captureSensorsValues();
+        String sensorData = "{\"primaryForce\": " + String(sensorsCapture.primaryForce) + ", \"secondaryForce\": " + String(sensorsCapture.secondaryForce) + ", \"teethPressed\": " + String(sensorsCapture.teethPressed) + " }";
         sensorEvents.send(sensorData.c_str(), "sensorData", millis());
     }
 };
@@ -113,9 +109,8 @@ void sensorsLoopHandler()
         return;
     }
 
-    captureTeethSensorValue();
-    captureForceSensorsValues();
-    String sensorData = "{\"primaryForce\": " + String(sensorsCapture.primaryForce) + ", \"secondaryForce\": " + String(sensorsCapture.secondaryForce) + ", \"teethPressed\": " + String(teethSensor) + " }";
+    captureSensorsValues();
+    String sensorData = "{\"primaryForce\": " + String(sensorsCapture.primaryForce) + ", \"secondaryForce\": " + String(sensorsCapture.secondaryForce) + ", \"teethPressed\": " + String(sensorsCapture.teethPressed) + " }";
     sensorEvents.send(sensorData.c_str(), "sensorData", millis());
     last_time_sensors = millis();
 }

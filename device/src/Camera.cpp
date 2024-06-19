@@ -1,9 +1,5 @@
 #include <Arduino.h>
-// Libs Used for Camera Streaming V1
 #include "esp_camera.h"
-#include "soc/soc.h"          //disable brownout problems
-#include "soc/rtc_cntl_reg.h" //disable brownout problems
-
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
@@ -373,7 +369,6 @@ void setupCameraModule()
 
 void setupCamera()
 {
-    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); // disable brownout detector
     Serial.println("Camera setup starting...");
 
     setupCameraModule();
