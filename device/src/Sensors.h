@@ -1,0 +1,2 @@
+void setupSensors();
+void sensorsLoopHandler();

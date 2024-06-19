@@ -4,25 +4,14 @@
       <h1 class="loading animated" v-show="isLoading">{{ t("welcome") }}</h1>
     </Transition>
     <Transition name="fade" appear>
-      <div class="app-layout animated" v-show="!isLoading"> 
-        <Sensors
-          key="sensors"
-          @started="handleSensorsStarted"
-          :src="sensorsEndpoint"
-          v-if="sensorsEndpoint"
-          class="sensors"
-        />
+      <div class="app-layout animated" v-show="!isLoading">
+        <Sensors key="sensors" @started="handleSensorsStarted" :src="sensorsEndpoint" v-if="sensorsEndpoint"
+          class="sensors" />
         <p v-else>
           {{ t("no_sensors_src") }}
         </p>
-        <LiveVideo
-          key="live-video"
-          v-show="!isLoading"
-          @liveVideoStarted="handleVideoLoaded"
-          :src="liveVideoEndpoint"
-          v-if="liveVideoEndpoint"
-          class="live-video"
-        />
+        <LiveVideo key="live-video" v-show="!isLoading" @liveVideoStarted="handleVideoLoaded" :src="liveVideoEndpoint"
+          v-if="liveVideoEndpoint" class="live-video" />
         <p v-else>
           {{ t("no_camera_src") }}
         </p>
@@ -45,8 +34,8 @@ const route = useRoute();
 const { query } = route;
 const { ip, cameraStreamUrl, sensorsUrl } = query as { ip?: string; cameraStreamUrl?: string; sensorsUrl?: string };
 
-const liveVideoEndpoint = cameraStreamUrl || ip ? `http://${ip}:80/camera` : "";
-const sensorsEndpoint = sensorsUrl || ip ? `http://${ip}:80/sensors` : "";
+const liveVideoEndpoint = cameraStreamUrl || ip ? `http://${ip}/camera` : "";
+const sensorsEndpoint = sensorsUrl || ip ? `http://${ip}/sensors` : "";
 
 const sensorsStarted = ref(false);
 const videoLoaded = ref(false);
@@ -75,7 +64,7 @@ onMounted(() => {
   }, TIMEOUT);
 })
 </script>
-  
+
 <style scoped>
 .wrapper {
   display: flex;
@@ -121,4 +110,3 @@ onMounted(() => {
   flex-grow: 1;
 }
 </style>
-  
