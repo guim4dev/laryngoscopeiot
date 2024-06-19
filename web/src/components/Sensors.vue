@@ -1,19 +1,14 @@
 <template>
     <div class="sensors-wrapper">
-        <VerticalBarSensor
-            v-for="sensor in sensors"
-            :key="sensor.label"
-            :value="sensor.value.value"
-            :label="sensor.label"
-            :color="sensor.color"
-        />
+        <VerticalBarSensor v-for="sensor in sensors" :key="sensor.label" :value="sensor.value.value"
+            :label="sensor.label" :color="sensor.color" />
     </div>
 </template>
-  
+
 <script setup lang="ts">
 import { useEventSource } from '@vueuse/core'
 import { ElMessage, MessageHandler } from 'element-plus';
-import { defineProps, watch, ref } from "vue";
+import { watch, ref } from "vue";
 import VerticalBarSensor from '@/components/sensors/VerticalBarSensor.vue';
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
@@ -48,13 +43,13 @@ const sensors = [
 ] as const
 
 const { status, data } = useEventSource(props.src, ["sensorData"], {
-  autoReconnect: {
-    retries: 3,
-    delay: 1000,
-    onFailed() {
-      ElMessage({ message: t('sensors.failed_to_connect'), type: 'error' })
+    autoReconnect: {
+        retries: 3,
+        delay: 1000,
+        onFailed() {
+            ElMessage({ message: t('sensors.failed_to_connect'), type: 'error' })
+        },
     },
-  },
 })
 
 watch(status, (newStatus) => {

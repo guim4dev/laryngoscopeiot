@@ -4,13 +4,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, watch } from "vue";
-import { useEventSource } from "@vueuse/core";
-import { ElMessage } from "element-plus";
-import { useI18n } from "vue-i18n";
-const { t } = useI18n();
+import { ref, onMounted } from "vue";
+// import { useEventSource } from "@vueuse/core";
+// import { ElMessage } from "element-plus";
+// import { useI18n } from "vue-i18n";
+// const { t } = useI18n();
 
-const props = defineProps<{ src: string }>();
+// const props = defineProps<{ src: string }>();
 const emit = defineEmits(["liveVideoStarted"]);
 
 // TMP: testing event source implementation for camera data
@@ -41,7 +41,7 @@ const emit = defineEmits(["liveVideoStarted"]);
 
 // watch(data, (newData) => {
 //     if (!newData || newData?.startsWith("connected")) return
-    
+
 //     console.log('Received data:', newData)
 // })
 
@@ -52,6 +52,12 @@ const videoLoaded = () => {
   loaded.value = true;
   emit("liveVideoStarted");
 };
+
+onMounted(() => {
+  setTimeout(() => {
+    videoLoaded();
+  }, 3000);
+});
 </script>
 
 <style scoped>
