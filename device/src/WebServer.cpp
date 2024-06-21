@@ -2,7 +2,6 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
-static const char *JPG_CONTENT_TYPE = "image/jpeg";
 static const char *PLAIN_TEXT_CONTENT_TYPE = "text/plain";
 
 bool appliedGlobalConfigs = false;

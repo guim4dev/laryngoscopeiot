@@ -3,6 +3,7 @@
 #include "soc/soc.h"          //disable brownout problems
 #include "soc/rtc_cntl_reg.h" //disable brownout problems
 
+#include <WebServer.h>
 #include <Camera.h>
 #include <Sensors.h>
 #include <Utils.h>
@@ -85,6 +86,8 @@ void startCpuDebug()
     xTaskCreate(ctrLoggerTask, "ctrLoggerTask", 4096, NULL, 0, NULL);
 }
 
+AsyncWebServer webServer = AsyncWebServer(80);
+
 void setup()
 {
     WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); // disable brownout detector
@@ -93,12 +96,14 @@ void setup()
     blinkNTimes(3);
     Serial.println("Setup starting...");
     // startCpuDebug();
-
-    Serial.println("Initial Free PSRAM: " + String(ESP.getFreePsram()));
     setupWifi();
 
-    setupCamera();
-    setupSensors();
+    prepareWebserver(webServer);
+    setupCamera(webServer);
+    setupSensors(webServer);
+
+    // Begin server after setting both camera and sensors
+    webServer.begin();
 
     Serial.println("Setup done");
     Serial.println("Total heap: " + String(ESP.getHeapSize()));
@@ -108,8 +113,6 @@ void setup()
     Serial.flush();
 }
 
-// What todo with the loop ?
-// TODO: move sensors to separate file
 void loop()
 {
     sensorsLoopHandler();

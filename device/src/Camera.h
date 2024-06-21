@@ -1,1 +1,4 @@
-void setupCamera();
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+
+void setupCamera(AsyncWebServer &server);

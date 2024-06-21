@@ -38,67 +38,6 @@ static const char *STREAM_PART = "Content-Type: %s\r\nContent-Length: %u\r\n\r\n
 
 static const char *JPG_CONTENT_TYPE = "image/jpeg";
 
-AsyncWebServer cameraServer(81);
-
-bool cameraTaskStarted = false;
-// unsigned long camera_delay = 41.6; // 24fps
-unsigned long camera_delay = 500; // DEBUG: 2fps
-void cameraTask(void *z)
-{
-    int errorCounter = 0;
-    cameraTaskStarted = true;
-    while (1)
-    {
-        if (errorCounter > 5)
-        {
-            Serial.println("Too many camera errors. Stopping camera task.");
-            // cameraUpdates.send("Too many camera errors. Stopping camera task.", "cameraFail", millis());
-            cameraTaskStarted = false;
-            vTaskDelete(NULL);
-        };
-        safeDelay(camera_delay);
-        {
-            camera_fb_t *fb = esp_camera_fb_get();
-            if (fb == NULL)
-            {
-                Serial.println("Camera frame failed");
-                // cameraUpdates.send("cameraFrameFailed", "cameraFail", millis());
-                errorCounter++;
-                continue;
-            }
-
-            char *sendable_buffer = NULL;
-            size_t jpg_buf_len = 0;
-            // already a jpg
-            if (fb->format == PIXFORMAT_JPEG)
-            {
-                Serial.println("No need to convert to jpg");
-                jpg_buf_len = fb->len;
-                sendable_buffer = (char *)malloc(jpg_buf_len + 1);
-            }
-            else // need to convert to jpg
-            {
-                Serial.println("Converting to jpg...");
-                uint8_t *jpg_buf = NULL;
-                bool jpeg_converted = frame2jpg(fb, 80, &jpg_buf, &jpg_buf_len);
-                esp_camera_fb_return(fb);
-                if (!jpeg_converted)
-                {
-                    Serial.println("JPEG compression failed");
-                    // cameraUpdates.send("Failed to convert to JPG", "cameraFail", millis());
-                    errorCounter++;
-                    continue;
-                }
-                sendable_buffer = (char *)malloc(jpg_buf_len + 1);
-                Serial.println("Converted to jpg.");
-            }
-            Serial.println("JPEG: " + String(jpg_buf_len));
-            errorCounter = 0;
-            // cameraUpdates.send(sendable_buffer, "cameraFrame", millis());
-        }
-    }
-}
-
 class AsyncJpegStreamResponse : public AsyncAbstractResponse
 {
 private:
@@ -287,7 +226,6 @@ void streamJpg(AsyncWebServerRequest *request)
     camera_fb_t *fb = esp_camera_fb_get();
     if (fb == NULL)
     {
-        Serial.println("Webrequest: \"/stream\" -> Camera not Detected.");
         request->send(404);
         return;
     }
@@ -298,34 +236,10 @@ void streamJpg(AsyncWebServerRequest *request)
         request->send(501);
         return;
     }
-    response->addHeader("Access-Control-Allow-Origin", "*");
     request->send(response);
 }
 
-void setupCameraServer()
-{
-    prepareWebserver(cameraServer);
-    cameraServer.on("/camera/img", HTTP_GET, [](AsyncWebServerRequest *request)
-                    {
-        camera_fb_t *fb = esp_camera_fb_get();
-        if (!fb)
-        {
-            request->send(500, "text/plain", "Camera capture failed");
-            return;
-        }
-        // check which CPU is running
-        Serial.println("CPU when getting IMG: " + String(xPortGetCoreID()));
-        request->send_P(200, JPG_CONTENT_TYPE, fb->buf, fb->len);
-        esp_camera_fb_return(fb); });
-
-    cameraServer.on("/camera/stream", HTTP_GET, [](AsyncWebServerRequest *request)
-                    { streamJpg(request); });
-
-    cameraServer.begin();
-    Serial.println("Camera server started");
-}
-
-void setupCameraModule()
+esp_err_t setupCameraModule()
 {
     camera_config_t config;
     config.ledc_channel = LEDC_CHANNEL_0;
@@ -346,10 +260,10 @@ void setupCameraModule()
     config.pin_sccb_scl = SIOC_GPIO_NUM;
     config.pin_pwdn = PWDN_GPIO_NUM;
     config.pin_reset = RESET_GPIO_NUM;
-    config.xclk_freq_hz = 20000000;
+    config.xclk_freq_hz = 23000000; // 23Mhz
     config.pixel_format = PIXFORMAT_JPEG;
-    config.frame_size = FRAMESIZE_QVGA;
-    config.jpeg_quality = 10;
+    config.frame_size = FRAMESIZE_VGA;
+    config.jpeg_quality = 16;
     config.fb_count = 4;
     config.grab_mode = CAMERA_GRAB_LATEST;
     config.fb_location = CAMERA_FB_IN_PSRAM; // use PSRAM for frame buffer.
@@ -360,19 +274,52 @@ void setupCameraModule()
     if (err != ESP_OK)
     {
         Serial.printf("Camera init failed with error 0x%x", err);
-        return;
     }
-
-    Serial.println("Camera setup done successfully");
+    else
+    {
+        Serial.println("Camera setup done successfully");
+    }
     Serial.flush();
+    return err;
 }
 
-void setupCamera()
+void setupCameraOnServer(AsyncWebServer &server)
+{
+    server.on("/camera/img", HTTP_GET, [](AsyncWebServerRequest *request)
+              {
+        camera_fb_t *fb = esp_camera_fb_get();
+        if (!fb)
+        {
+            request->send(500, "text/plain", "Camera capture failed");
+            return;
+        }
+        request->send_P(200, JPG_CONTENT_TYPE, fb->buf, fb->len);
+        esp_camera_fb_return(fb); });
+
+    server.on("/camera/stream", HTTP_GET, [](AsyncWebServerRequest *request)
+              { streamJpg(request); });
+
+    server.on("/camera/reset", HTTP_GET, [](AsyncWebServerRequest *request)
+              {
+                        Serial.println("Resetting camera...");
+                        esp_camera_deinit();
+                        esp_err_t cameraRes = setupCameraModule();
+                        if (cameraRes != ESP_OK)
+                        {
+                            request->send(500, "text/plain", "Camera reset failed");
+                            return;
+                        }
+                        request->send(200, "text/plain", "Camera reset done"); });
+
+    Serial.println("Camera handlers injected into webServer");
+}
+
+void setupCamera(AsyncWebServer &server)
 {
     Serial.println("Camera setup starting...");
 
     setupCameraModule();
-    setupCameraServer();
+    setupCameraOnServer(server);
 
     Serial.println("Camera setup done");
 }
