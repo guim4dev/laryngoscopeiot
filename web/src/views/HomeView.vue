@@ -10,8 +10,8 @@
         <p v-else>
           {{ t("no_sensors_src") }}
         </p>
-        <LiveVideo key="live-video" v-show="!isLoading" @liveVideoStarted="handleVideoLoaded" :src="liveVideoEndpoint"
-          v-if="liveVideoEndpoint" class="live-video" />
+        <LiveVideo key="live-video" v-show="!isLoading" :cameraServer="server"
+          v-if="server" class="live-video" />
         <p v-else>
           {{ t("no_camera_src") }}
         </p>
@@ -32,20 +32,15 @@ const { t } = useI18n();
 const route = useRoute();
 
 const { query } = route;
-const { ip, cameraStreamUrl, sensorsUrl } = query as { ip?: string; cameraStreamUrl?: string; sensorsUrl?: string };
+const { ip, deviceServer } = query as { ip?: string; deviceServer?: string };
 
-const liveVideoEndpoint = cameraStreamUrl || ip ? `http://${ip}/camera` : "";
-const sensorsEndpoint = sensorsUrl || ip ? `http://${ip}/sensors` : "";
+const server = deviceServer || ip ? `http://${ip}` : "";
+const sensorsEndpoint = server ? `${server}/sensors` : "";
 
 const sensorsStarted = ref(false);
 const videoLoaded = ref(false);
 
 const isLoading = ref(true);
-const handleVideoLoaded = () => {
-  videoLoaded.value = true;
-  ElMessage({ message: t("video_started"), type: "success" });
-  if (sensorsStarted.value) isLoading.value = false;
-};
 
 const handleSensorsStarted = () => {
   sensorsStarted.value = true;
@@ -53,7 +48,7 @@ const handleSensorsStarted = () => {
   if (videoLoaded.value) isLoading.value = false;
 };
 
-const TIMEOUT = 5000;
+const TIMEOUT = 2000;
 
 onMounted(() => {
   setTimeout(() => {

@@ -1,76 +1,73 @@
 <template>
-  <div class="live-video">camera_placeholder</div>
-  <!-- <img class="live-video" :src="src" @load="videoLoaded" /> -->
+  <div class="video-wrapper">
+    <Spinner v-show="resetingLiveVideo" :height="'80px'" :width="'80px'" />
+    <img v-if="!resetingLiveVideo" class="live-video" :src="src" @error="handleLoadError"/>
+    <ElButton v-show="!resetingLiveVideo" class="reset-button" @click="resetLiveVideo">
+      <ElIcon style="vertical-align: middle">
+        <ElIconRefreshRight />
+      </ElIcon>
+  </Elbutton>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
-import { useEventSource } from "@vueuse/core";
-import { ElMessage } from "element-plus";
-import { useI18n } from "vue-i18n";
-const { t } = useI18n();
+import { onMounted, ref } from "vue";
+import Spinner from "@/components/common/Spinner.vue";
 
-const props = defineProps<{ src: string }>();
+const props = defineProps<{ cameraServer: string }>();
+const src = `${props.cameraServer}/camera/stream`;
+
 const emit = defineEmits(["liveVideoStarted"]);
+const resetingLiveVideo = ref(false);
 
-// TMP: testing event source implementation for camera data
-const { status, data } = useEventSource(props.src, ["cameraFail", "cameraFrame"], {
-  autoReconnect: {
-    retries: 3,
-    delay: 1000,
-    onFailed() {
-      ElMessage({ message: t('camera.failed_to_connect'), type: 'error' })
-    },
-  },
-})
+const cameraLoadDelay = 1000;
 
-watch(status, (newStatus) => {
-  if (newStatus === 'CLOSED') {
-    ElMessage({ message: t('camera.connection_closed'), type: 'error' })
-  }
+const resetLiveVideo = () => {
+  resetingLiveVideo.value = true;
+  setTimeout(() => {
+    resetingLiveVideo.value = false;
+    emit("liveVideoStarted");
+  }, cameraLoadDelay);
+}
 
-  if (newStatus === 'CONNECTING') {
-    console.log('Sensors EventSource is connecting...')
-  }
-
-  if (newStatus === 'OPEN') {
-    console.log('Sensors EventSource is connected')
-    emit('liveVideoStarted')
-  }
-})
-
-watch(data, (newData) => {
-  if (!newData || newData?.startsWith("connected")) return
-
-
-  console.log('Received data:', newData)
-})
-
-const loaded = ref(false);
-const videoLoaded = () => {
-  if (loaded.value) return;
-
-  loaded.value = true;
-  emit("liveVideoStarted");
+const handleLoadError = (event: Event) => {
+  console.log("Error loading video");
+  console.log(event);
+  resetLiveVideo();
 };
 
 onMounted(() => {
   setTimeout(() => {
-    videoLoaded();
-  }, 3000);
+    if (resetingLiveVideo) {
+      console.log("dont emit liveVideoStarted");
+      return
+    }
+    emit("liveVideoStarted");
+  }, cameraLoadDelay);
 });
 </script>
 
 <style scoped>
-.live-video {
-  width: 100%;
-  height: 100%;
-  border: 1px solid white;
-  border-radius: 8px;
-  padding: 8px;
+.reset-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+}
+
+.video-wrapper{
   background-color: black;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid white;
+  border-radius: 8px;
+  position: relative;
+}
+
+.live-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 </style>

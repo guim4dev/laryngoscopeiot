@@ -13,6 +13,7 @@
   },
   "camera": {
     "failed_to_connect": "Failed to connect to camera.",
-    "connection_closed": "Connection to camera closed."
+    "connection_closed": "Connection to camera closed.",
+    "video_loading": "Loading video..."
   }
 }
