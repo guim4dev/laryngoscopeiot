@@ -43,6 +43,7 @@ https://learn.adafruit.com/force-sensitive-resistor-fsr/overview
 <!-- ESP32CAM - Streaming da Imagem com a Lib Async -->
 https://github.com/me-no-dev/ESPAsyncWebServer/issues/908
 https://gist.github.com/me-no-dev/d34fba51a8f059ac559bf62002e61aa3
+https://randomnerdtutorials.com/esp32-cam-ov2640-camera-settings/
 ##### Instrucoes Extras para Linux
 https://www.reddit.com/r/archlinux/comments/8j53dq/how_do_i_install_ch340_chip_drivers_on_arch/ (primeira thread - instalacao dos drivers CH340)
 
