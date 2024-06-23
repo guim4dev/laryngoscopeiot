@@ -1,27 +1,7 @@
 #include <Arduino.h>
-#include <HTTPClient.h>
 #include <WiFi.h>
 
 #define LED_BUILTIN 4
-
-String discordWebhookUrl = "http://windmill.x.guima.digital/api/w/admins/jobs/run/h/fb8aaa991d3a5b61?token=9WKmNJSBSeEgVCR1iq7D2taq3Ou3QXjl";
-
-void notifyDiscordWebhook(String content)
-{
-    HTTPClient http;
-    WiFiClient client;
-
-    http.begin(client, discordWebhookUrl);
-    http.addHeader("Content-Type", "application/json");
-
-    String json = "{\"payload\":{\"content\":\"" + content + "\"}}";
-    int httpCode = http.POST(json);
-    http.end();
-
-    Serial.println("Notified Discord webhook with content: " + content);
-    Serial.println("Discord webhook response: " + String(httpCode));
-    Serial.flush();
-}
 
 void safeDelay(uint32_t ms)
 {
