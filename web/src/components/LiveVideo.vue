@@ -28,7 +28,7 @@ const resetLiveVideo = () => {
   }, cameraLoadDelay);
 }
 
-const handleLoadError = (event: Event) => {
+const handleLoadError = () => {
   resetLiveVideo();
 };
 
