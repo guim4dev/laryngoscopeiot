@@ -164,6 +164,6 @@ onMounted(async () => {
 }
 
 .live-video {
-  flex-grow: 1;
+  height: 85%;
 }
 </style>
