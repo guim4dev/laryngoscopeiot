@@ -93,8 +93,8 @@ public:
             if (index && _frame.fb)
             {
                 uint64_t end = (uint64_t)micros();
-                int fp = (end - lastAsyncRequest) / 1000;
-                log_printf("Size: %uKB, Time: %ums (%.1ffps)\n", _jpg_buf_len / 1024, fp);
+                int msDiff = (end - lastAsyncRequest) / 1000;
+                log_printf("Size: %uKB, Time: %ums\n", _jpg_buf_len / 1024, msDiff);
                 lastAsyncRequest = end;
                 if (_frame.fb->format != PIXFORMAT_JPEG)
                 {
@@ -108,7 +108,7 @@ public:
             if (maxLen < (strlen(STREAM_BOUNDARY) + strlen(STREAM_PART) + strlen(JPG_CONTENT_TYPE) + 8))
             {
                 // log_w("Not enough space for headers");
-                return RESPONSE_TRY_AGAIN;
+                return RESPONSE_TRY_AGAIN; // lib will try to get content again
             }
             // get frame
             _frame.index = 0;
@@ -283,6 +283,12 @@ esp_err_t setupCameraModule()
     return err;
 }
 
+esp_err_t resetCameraModule()
+{
+    esp_camera_deinit();
+    return setupCameraModule();
+}
+
 void setupCameraOnServer(AsyncWebServer &server)
 {
     server.on("/camera/img", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -302,8 +308,7 @@ void setupCameraOnServer(AsyncWebServer &server)
     server.on("/camera/reset", HTTP_GET, [](AsyncWebServerRequest *request)
               {
                         Serial.println("Resetting camera...");
-                        esp_camera_deinit();
-                        esp_err_t cameraRes = setupCameraModule();
+                        esp_err_t cameraRes = resetCameraModule();
                         if (cameraRes != ESP_OK)
                         {
                             request->send(500, "text/plain", "Camera reset failed");
@@ -322,4 +327,14 @@ void setupCamera(AsyncWebServer &server)
     setupCameraOnServer(server);
 
     Serial.println("Camera setup done");
+}
+
+void cameraResetHandler()
+{
+    esp_err_t cameraRes = resetCameraModule();
+    if (cameraRes != ESP_OK)
+    {
+        Serial.println("Camera reset failed");
+        Serial.flush();
+    }
 }

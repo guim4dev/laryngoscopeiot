@@ -8,13 +8,13 @@
 <script setup lang="ts">
 import { useEventSource } from '@vueuse/core'
 import { ElMessage, MessageHandler } from 'element-plus';
-import { watch, ref } from "vue";
+import { watch, ref, onMounted } from "vue";
 import VerticalBarSensor from '@/components/sensors/VerticalBarSensor.vue';
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
 const props = defineProps<{ src: string }>();
-const emit = defineEmits(["started"]);
+const emit = defineEmits(["started", "lostConnection"]);
 
 // TODO:
 // values range from 0 to 4095
@@ -42,7 +42,7 @@ const sensors = [
     }
 ] as const
 
-const { status, data } = useEventSource(props.src, ["sensorData"], {
+const { status, data, close } = useEventSource(props.src, ["sensorData"], {
     autoReconnect: {
         retries: 3,
         delay: 1000,
@@ -52,18 +52,24 @@ const { status, data } = useEventSource(props.src, ["sensorData"], {
     },
 })
 
-watch(status, (newStatus) => {
-    if (newStatus === 'CLOSED') {
-        ElMessage({ message: t('sensors.connection_closed'), type: 'error' })
-    }
+let lastReceivedMessageAt: Date | undefined = undefined
 
-    if (newStatus === 'CONNECTING') {
-        console.log('Sensors EventSource is connecting...')
+const handleLostConnection = () => {
+    isConnected.value = false
+    close()
+    emit('lostConnection')
+    ElMessage({ message: t('sensors.connection_lost'), type: 'error' })
+}
+
+const isConnected = ref(false)
+watch(status, (newStatus) => {
+    if (newStatus === 'CLOSED' && isConnected.value) {
+        handleLostConnection()
     }
 
     if (newStatus === 'OPEN') {
-        console.log('Sensors EventSource is connected')
         emit('started')
+        isConnected.value = true
     }
 })
 
@@ -77,11 +83,10 @@ const handleTeethBeingTouched = () => {
         teethStartedBeingPressedAt.value = new Date()
     }
 
-    if (navigator.vibrate) {
-        navigator.vibrate(200)
-    } else {
-        console.log('Vibrating not supported')
-    }
+    // Vibration not supported for non-https connections
+    // if (navigator.vibrate) {
+    //     navigator.vibrate(200)
+    // }
 }
 
 const handleTeethNotBeingTouched = () => {
@@ -94,6 +99,7 @@ const handleTeethNotBeingTouched = () => {
 
 watch(data, (newData) => {
     if (!newData || newData?.startsWith("connected")) return
+    lastReceivedMessageAt = new Date();
 
     const parsedData = JSON.parse(newData)
     const { primaryForce, secondaryForce, teethPressed } = parsedData
@@ -105,7 +111,18 @@ watch(data, (newData) => {
         handleTeethNotBeingTouched()
     }
 })
-// display grid with 1 one line and 2 columns of same size
+
+onMounted(() => {
+    setInterval(() => {
+        if (lastReceivedMessageAt && isConnected.value) {
+            const now = new Date()
+            const diff = now.getTime() - lastReceivedMessageAt.getTime()
+            if (diff > 5000) { // 5 seconds without receiving a message
+                handleLostConnection()
+            }
+        }
+    }, 2000) // check every 2 seconds if we are still connected
+})
 </script>
 
 <style scoped>

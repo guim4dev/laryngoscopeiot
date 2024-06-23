@@ -1,66 +1,128 @@
 <template>
   <div class="wrapper">
     <Transition name="fade" appear>
-      <h1 class="loading animated" v-show="isLoading">{{ t("welcome") }}</h1>
+      <h1 class="loading animated" v-show="!isDeviceAlive && initialLoading">{{ t("welcome") }}</h1>
     </Transition>
     <Transition name="fade" appear>
-      <div class="app-layout animated" v-show="!isLoading">
-        <Sensors key="sensors" @started="handleSensorsStarted" :src="sensorsEndpoint" v-if="sensorsEndpoint"
-          class="sensors" />
-        <p v-else>
-          {{ t("no_sensors_src") }}
-        </p>
-        <LiveVideo key="live-video" v-show="!isLoading" :cameraServer="server"
-          v-if="server" class="live-video" />
-        <p v-else>
-          {{ t("no_camera_src") }}
-        </p>
+      <div class="app-layout animated" v-if="isDeviceAlive" v-show="!initialLoading">
+        <Sensors key="sensors" @started="handleSensorsStarted" :src="sensorsEndpoint" @lostConnection="validateIfDeviceIsAlive"
+          class="sensors" v-if="showSensors"/>
+        <LiveVideo key="live-video" v-if="showCamera" v-show="!initialLoading" :cameraServer="server" class="live-video" />
       </div>
     </Transition>
+    <ElDialog
+      :title="t('device_not_alive')"
+      v-model="showDeviceAliveDialog"
+      width="350"
+      align-center
+      :showClose="false"
+      :closeOnClickModal="false"
+      :closeOnPressEscape="false"
+    >
+      <span v-html="t('device_not_alive_description')" />
+      <template #footer>
+        <div class="alive-footer">
+          <span>{{ t("device_awaiting_for_connection") }}</span>
+          <DotsLoader size="20px" color="#303133" />
+        </div>
+      </template>
+    </ElDialog>
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
+import { DeviceApi } from "@/services/DeviceApi";
 
 import LiveVideo from "@/components/LiveVideo.vue";
 import Sensors from "@/components/Sensors.vue";
+import DotsLoader from "@/components/common/DotsLoader.vue";
 
 const { t } = useI18n();
 const route = useRoute();
 
 const { query } = route;
-const { ip, deviceServer } = query as { ip?: string; deviceServer?: string };
+const { ip, deviceServer, noCamera, noSensors } = query as { ip?: string; deviceServer?: string, noCamera?: string, noSensors?: string};
+const deviceIp = ip || "192.168.4.1" // default IP address of the device - value when in AP mode
+const showCamera = noCamera !== "true";
+const showSensors = noSensors !== "true";
+const isDeviceAlive = ref(false);
+const initialLoading = ref(true);
+const validatedDeviceAliveCount = ref(0);
 
-const server = deviceServer || ip ? `http://${ip}` : "";
+const deviceApi = new DeviceApi(deviceIp);
+
+const server = deviceServer || deviceIp ? `http://${deviceIp}` : "";
 const sensorsEndpoint = server ? `${server}/sensors` : "";
 
 const sensorsStarted = ref(false);
-const videoLoaded = ref(false);
-
-const isLoading = ref(true);
 
 const handleSensorsStarted = () => {
   sensorsStarted.value = true;
   ElMessage({ message: t("sensors_started"), type: "success" });
-  if (videoLoaded.value) isLoading.value = false;
 };
 
-const TIMEOUT = 2000;
+const INTERVAL = 2000;
 
-onMounted(() => {
-  setTimeout(() => {
-    if (sensorsStarted || videoLoaded) {
-      console.log("Timeout reached, stopping loading animation and showing content that was able to load");
-      isLoading.value = false;
+type Interval = ReturnType<typeof setInterval>;
+let checkDeviceAliveInterval: Interval | undefined = undefined;
+
+let runningValidation = false; // to prevent multiple validation requests at same time
+const validateIfDeviceIsAlive = async () => {
+  if (runningValidation) return;
+  runningValidation = true;
+
+  isDeviceAlive.value = await deviceApi.isAlive();
+  if (!isDeviceAlive.value) {
+    validatedDeviceAliveCount.value += 1;
+
+    if (!checkDeviceAliveInterval) {
+      checkDeviceAliveInterval = setInterval(async () =>
+        await validateIfDeviceIsAlive()
+      , INTERVAL);
     }
-  }, TIMEOUT);
+  } else {
+    if (checkDeviceAliveInterval) {
+      clearInterval(checkDeviceAliveInterval);
+      checkDeviceAliveInterval = undefined;
+    }
+    validatedDeviceAliveCount.value = 0;
+  }
+  runningValidation = false;
+};
+
+const showDeviceAliveDialog = computed(() => {
+  return !isDeviceAlive.value && validatedDeviceAliveCount.value > 0;
+});
+
+const INITIAL_LOADING = 2000; // 2 seconds
+
+onMounted(async () => {
+  setTimeout(() => {
+    initialLoading.value = false;
+  }, INITIAL_LOADING);
+  await validateIfDeviceIsAlive();
 })
 </script>
 
 <style scoped>
+.alive-footer {
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 1rem;
+  color: #606266;
+  font-size: 0.7rem;
+}
+
+.alive-footer span {
+  display: inline-block;
+  flex-grow: 1;
+}
+
 .wrapper {
   display: flex;
   flex-direction: column;

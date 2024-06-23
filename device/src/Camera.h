@@ -2,3 +2,4 @@
 #include <ESPAsyncWebServer.h>
 
 void setupCamera(AsyncWebServer &server);
+void cameraResetHandler();

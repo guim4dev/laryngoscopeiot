@@ -11,6 +11,14 @@ defineProps({
     height: {
         type: String,
         default: "100%"
+    },
+    color: {
+        type: String,
+        default: "#fff"
+    },
+    secondaryColor: {
+        type: String,
+        default: "rgba(255,255,255,.3)"
     }
 });
 
@@ -21,9 +29,9 @@ defineProps({
   display: inline-block;
   width: v-bind(width);
   height: v-bind(height);
-  border: 3px solid rgba(255,255,255,.3);
+  border: 3px solid v-bind(secondaryColor);
   border-radius: 50%;
-  border-top-color: #fff;
+  border-top-color: v-bind(color);
   animation: spin 1s ease-in-out infinite;
   -webkit-animation: spin 1s ease-in-out infinite;
 }

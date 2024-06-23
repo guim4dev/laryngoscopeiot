@@ -3,3 +3,4 @@
 
 void setupSensors(AsyncWebServer &server);
 void sensorsLoopHandler();
+void sensorsResetHandler();

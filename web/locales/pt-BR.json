@@ -4,12 +4,16 @@
   "no_sensors_src": "Fonte de dados de sensores não disponilizada.",
   "sensors_started": "Conectado aos sensores com sucesso",
   "video_started": "Vídeo iniciado com sucesso",
+  "device_not_alive": "LaringoscópIOT não está conectado",
+  "device_not_alive_description": "Por favor, certifique-se de que o <b>dispositivo está ligado</b> e você está conectado ao <b>WiFi iniciada por 'laringoscopiot-'</b> com a senha <b>'laringoscopiot'</b>.",
+  "device_awaiting_for_connection": "Aguardando conexão com o dispositivo...",
   "sensors": {
     "primary_force_label": "Força Primária",
     "secondary_force_label": "Força Secundária",
     "failed_to_connect": "Falha ao conectar aos sensores.",
     "connection_closed": "Conexão com os sensores fechada.",
-    "teeth_being_touched": "Dentes sendo tocados! Tenha cuidado!"
+    "teeth_being_touched": "Dentes sendo tocados! Tenha cuidado!",
+    "connection_lost": "Conexão com os sensores perdida."
   },
   "camera": {
     "failed_to_connect": "Falha ao conectar à câmera.",

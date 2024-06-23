@@ -90,3 +90,9 @@ void sensorsLoopHandler()
     sensorEvents.send(sensorData.c_str(), "sensorData", now);
     last_time_sensors = now;
 }
+
+void sensorsResetHandler()
+{
+    connectedToSensors = false;
+    Serial.println("Sensors resetted");
+}

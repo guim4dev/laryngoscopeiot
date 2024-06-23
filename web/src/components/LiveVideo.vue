@@ -17,7 +17,6 @@ import Spinner from "@/components/common/Spinner.vue";
 const props = defineProps<{ cameraServer: string }>();
 const src = `${props.cameraServer}/camera/stream`;
 
-const emit = defineEmits(["liveVideoStarted"]);
 const resetingLiveVideo = ref(false);
 
 const cameraLoadDelay = 1000;
@@ -26,23 +25,18 @@ const resetLiveVideo = () => {
   resetingLiveVideo.value = true;
   setTimeout(() => {
     resetingLiveVideo.value = false;
-    emit("liveVideoStarted");
   }, cameraLoadDelay);
 }
 
 const handleLoadError = (event: Event) => {
-  console.log("Error loading video");
-  console.log(event);
   resetLiveVideo();
 };
 
 onMounted(() => {
   setTimeout(() => {
     if (resetingLiveVideo) {
-      console.log("dont emit liveVideoStarted");
       return
     }
-    emit("liveVideoStarted");
   }, cameraLoadDelay);
 });
 </script>
