@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">LaringoscópIOT</string>
+    <string name="title_activity_main">LaringoscópIOT</string>
+    <string name="package_name">digital.guima.laringoscopiot</string>
+    <string name="custom_url_scheme">digital.guima.laringoscopiot</string>
+</resources>

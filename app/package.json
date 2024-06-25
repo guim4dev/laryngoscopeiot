@@ -1,0 +1,40 @@
+{
+  "name": "app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
+    "capacitor:generate-image-assets": "npx capacitor-assets generate --assetPath resources",
+    "capacitor:sync": "yarn build && cap sync",
+    "capacitor:copy": "npx cap copy",
+    "capacitor:open:ios": "npx cap open ios",
+    "capacitor:open:android": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.0",
+    "@capacitor/core": "^6.1.0",
+    "@capacitor/haptics": "^6.0.0",
+    "@capacitor/ios": "^6.1.0",
+    "@vueuse/core": "^10.11.0",
+    "axios": "^1.7.2",
+    "element-plus": "^2.7.5",
+    "path": "^0.12.7",
+    "vue": "^3.3.4",
+    "vue-i18n": "^9.2.2",
+    "vue-router": "^4.3.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.0",
+    "@types/node": "^20.14.2",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "typescript": "^5.0.2",
+    "unplugin-auto-import": "^0.17.6",
+    "unplugin-element-plus": "^0.8.0",
+    "unplugin-vue-components": "^0.27.0",
+    "vite": "^4.4.0",
+    "vue-tsc": "^1.8.3"
+  }
+}
