@@ -7,6 +7,7 @@
   "device_not_alive": "LaryngoscopeIOT not connected",
   "device_not_alive_description": "Please make sure the <b>device is powered on</b> and you are connected to the <b>WiFi</b> that <b>starts with 'laringoscopiot-'</b> using the password <b>'laringoscopiot'</b>.",
   "device_awaiting_for_connection": "Waiting for connection with the device...",
+  "chrome_disclaimer": "If you are using <b>Google Chrome</b>, access the link <b>chrome://flags/#block-insecure-private-network-requests</b> and disable the option <b>Block insecure private network requests</b>.",
   "sensors": {
     "primary_force_label": "Primary Force",
     "secondary_force_label": "Secondary Force",

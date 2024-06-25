@@ -7,6 +7,7 @@
   "device_not_alive": "LaringoscópIOT não está conectado",
   "device_not_alive_description": "Por favor, certifique-se de que o <b>dispositivo está ligado</b> e você está conectado ao <b>WiFi iniciada por 'laringoscopiot-'</b> com a senha <b>'laringoscopiot'</b>.",
   "device_awaiting_for_connection": "Aguardando conexão com o dispositivo...",
+  "chrome_disclaimer": "Se estiver utilizando o navegador <b>Google Chrome</b>, acesse o link <b>chrome://flags/#block-insecure-private-network-requests</b> e desabilite a opção <b>Block insecure private network requests</b>.",
   "sensors": {
     "primary_force_label": "Força Primária",
     "secondary_force_label": "Força Secundária",

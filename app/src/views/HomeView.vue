@@ -19,7 +19,10 @@
       :closeOnClickModal="false"
       :closeOnPressEscape="false"
     >
-      <span v-html="t('device_not_alive_description')" />
+      <div class="body-dialog-wrapper">
+        <span v-html="t('device_not_alive_description')" />
+        <span v-if="showChromeDisclaimer" v-html="t('chrome_disclaimer')" />
+      </div>
       <template #footer>
         <div class="alive-footer">
           <span>{{ t("device_awaiting_for_connection") }}</span>
@@ -35,6 +38,7 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 import { DeviceApi } from "@/services/DeviceApi";
+import { Capacitor } from "@capacitor/core";
 
 import LiveVideo from "@/components/LiveVideo.vue";
 import Sensors from "@/components/Sensors.vue";
@@ -63,6 +67,8 @@ const handleSensorsStarted = () => {
   sensorsStarted.value = true;
   ElMessage({ message: t("sensors_started"), type: "success" });
 };
+
+const showChromeDisclaimer = !Capacitor.isNativePlatform();
 
 const INTERVAL = 2000;
 
@@ -108,6 +114,13 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.body-dialog-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .alive-footer {
   display: flex;
   width: 100%;
