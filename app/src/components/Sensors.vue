@@ -1,6 +1,6 @@
 <template>
     <VerticalBarSensor :value="tongueForceSensorDefinition.value.value"
-        :label="tongueForceSensorDefinition.label" :color="tongueForceSensorDefinition.color" />
+        :label="tongueForceSensorDefinition.label" icon-path="/icons/pressure_colorful.png"/>
 </template>
 
 <script setup lang="ts">
@@ -29,8 +29,7 @@ const teethStartedBeingPressedAt = ref<Date>()
 
 const tongueForceSensorDefinition = {
     label: t('sensors.tongue_force_label'),
-    value: tongueForceSensor,
-    color: 'red'
+    value: tongueForceSensor
 } as const
 
 const { status, data, close } = useEventSource(props.src, ["sensorData"], {

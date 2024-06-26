@@ -5,14 +5,23 @@
             <div v-if="showValue" class="value">{{ value }}N</div>
         </div>
 
-        <div class="bar" :style="{ height: `${value}%`, width: '20px', backgroundColor: color }">
-        </div>
+        <div class="bar" :style="{ height: `${visibleHeight}%`, width: '20px', backgroundColor: color }" />
+        <img v-if="iconPath" :src="iconPath" alt="Force sensor icon" class="icon" />
     </div>
 </template>
 
 <script setup lang="ts">
-defineProps({
-    value: Number,
+import { computed } from 'vue';
+
+const props = defineProps({
+    value: {
+        type: Number,
+        default: 0,
+        required: true
+    },
+    iconPath: {
+        type: String,
+    },
     label: String,
     maxValue: {
         type: Number,
@@ -22,11 +31,41 @@ defineProps({
         type: Boolean,
         default: true
     },
-    color: {
+    warningThreshold: {
+        type: Number,
+        default: 60
+    },
+    dangerThreshold: {
+        type: Number,
+        default: 80
+    },
+    safeColor: {
+        type: String,
+        default: 'green'
+    },
+    warningColor: {
+        type: String,
+        default: 'yellow'
+    },
+    dangerColor: {
         type: String,
         default: 'red'
     }
 }); // this number is a number from 0 to 100
+
+const visibleHeight = computed(() => Math.max(props.value, 5)) // height needs to be at least 5%
+
+const color = computed(() => {
+    if (props.value < props.warningThreshold) {
+        return props.safeColor;
+    }
+
+    if (props.value < props.dangerThreshold) {
+        return props.warningColor;
+    }
+
+    return props.dangerColor;
+});
 </script>
 
 <style scoped>
@@ -50,14 +89,21 @@ defineProps({
 
 .label {
     font-size: 0.75rem;
-    word-break: keep-all;
+    max-width: 100px;
     text-align: center;
-    font-weight: italic;
+    font-weight: 500;
 }
 
 .bar {
-    border-radius: 3px;
-    transition: height 0.3s;
+    border-radius: 4px;
+    transition: height 0.3s, background-color 0.3s;
     align-self: flex-end
+}
+
+.icon {
+    width: 30px;
+    aspect-ratio: 1;
+    object-fit: contain;
+    align-self: flex-end;
 }
 </style>
