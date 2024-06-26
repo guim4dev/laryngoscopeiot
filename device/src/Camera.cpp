@@ -117,7 +117,7 @@ public:
             if (_frame.fb == NULL)
             {
                 log_e("Camera frame failed");
-                return 0;
+                return RESPONSE_TRY_AGAIN; // lib will try to get content again
             }
 
             if (_frame.fb->format != PIXFORMAT_JPEG)
@@ -131,7 +131,7 @@ public:
                     _frame.fb = NULL;
                     _jpg_buf_len = 0;
                     _jpg_buf = NULL;
-                    return 0;
+                    return RESPONSE_TRY_AGAIN; // lib will try to get content again
                 }
                 log_i("JPEG: %lums, %uB", millis() - st, _jpg_buf_len);
             }
@@ -176,51 +176,6 @@ public:
     }
 };
 
-char *getCurrentCamSettings()
-{
-    static char json_response[1024];
-    char *p = json_response;
-    *p++ = '{';
-    sensor_t *s = esp_camera_sensor_get();
-    if (s == NULL)
-    {
-        Serial.println("Could get current setting: Camera init failed\n");
-        p += sprintf(p, "\"Error\":\"Camera failed\"");
-    }
-    else
-    {
-        p += sprintf(p, "\"framesize\":%u,", s->status.framesize);
-        p += sprintf(p, "\"quality\":%u,", s->status.quality);
-        p += sprintf(p, "\"brightness\":%d,", s->status.brightness);
-        p += sprintf(p, "\"contrast\":%d,", s->status.contrast);
-        p += sprintf(p, "\"saturation\":%d,", s->status.saturation);
-        p += sprintf(p, "\"sharpness\":%d,", s->status.sharpness);
-        p += sprintf(p, "\"special_effect\":%u,", s->status.special_effect);
-        p += sprintf(p, "\"wb_mode\":%u,", s->status.wb_mode);
-        p += sprintf(p, "\"awb\":%u,", s->status.awb);
-        p += sprintf(p, "\"awb_gain\":%u,", s->status.awb_gain);
-        p += sprintf(p, "\"aec\":%u,", s->status.aec);
-        p += sprintf(p, "\"aec2\":%u,", s->status.aec2);
-        p += sprintf(p, "\"denoise\":%u,", s->status.denoise);
-        p += sprintf(p, "\"ae_level\":%d,", s->status.ae_level);
-        p += sprintf(p, "\"aec_value\":%u,", s->status.aec_value);
-        p += sprintf(p, "\"agc\":%u,", s->status.agc);
-        p += sprintf(p, "\"agc_gain\":%u,", s->status.agc_gain);
-        p += sprintf(p, "\"gainceiling\":%u,", s->status.gainceiling);
-        p += sprintf(p, "\"bpc\":%u,", s->status.bpc);
-        p += sprintf(p, "\"wpc\":%u,", s->status.wpc);
-        p += sprintf(p, "\"raw_gma\":%u,", s->status.raw_gma);
-        p += sprintf(p, "\"lenc\":%u,", s->status.lenc);
-        p += sprintf(p, "\"hmirror\":%u,", s->status.hmirror);
-        p += sprintf(p, "\"vflip\":%u,", s->status.vflip);
-        p += sprintf(p, "\"dcw\":%u,", s->status.dcw);
-        p += sprintf(p, "\"colorbar\":%u", s->status.colorbar);
-    }
-    *p++ = '}';
-    *p++ = 0;
-    return json_response;
-}
-
 void streamJpg(AsyncWebServerRequest *request)
 {
     camera_fb_t *fb = esp_camera_fb_get();
@@ -263,7 +218,7 @@ esp_err_t setupCameraModule()
     config.xclk_freq_hz = 23000000; // 23Mhz
     config.pixel_format = PIXFORMAT_JPEG;
     config.frame_size = FRAMESIZE_VGA;
-    config.jpeg_quality = 16;
+    config.jpeg_quality = 12;
     config.fb_count = 4;
     config.grab_mode = CAMERA_GRAB_LATEST;
     config.fb_location = CAMERA_FB_IN_PSRAM; // use PSRAM for frame buffer.

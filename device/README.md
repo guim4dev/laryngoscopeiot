@@ -44,8 +44,24 @@ https://learn.adafruit.com/force-sensitive-resistor-fsr/overview
 https://github.com/me-no-dev/ESPAsyncWebServer/issues/908
 https://gist.github.com/me-no-dev/d34fba51a8f059ac559bf62002e61aa3
 https://randomnerdtutorials.com/esp32-cam-ov2640-camera-settings/
+
 ##### Instrucoes Extras para Linux
 https://www.reddit.com/r/archlinux/comments/8j53dq/how_do_i_install_ch340_chip_drivers_on_arch/ (primeira thread - instalacao dos drivers CH340)
+
+##### Configs esp32 CAM
+https://esphome.io/components/esp32_camera.html
+
+##### Problema da Linha Horizontal no stream de video
+
+There could be a number of reasons for this behaviour, and it possibly down to a cumulative number of issues which will affect the picture quality
+- Power supply quality. ESP32's draw a lot of current under certain conditions, and this can cause a brownout condition to occur. This could be down to your USB port not being able to supply enough current. Check the serial terminal for messages, if you see brownout error messages on your serial monitor, try a powered USB hub or a better quality USB cable
+- Power supply noise. If you have access to an oscilloscope, check the 3.3 and 5v rails for garbage. If excessive, try adding 2 x 1000uf capacitors on each rail
+- RF interference. The ribbon cable between the camera and the board is not shielded. Try lifting it away from the board, or even wrapping it in a thin layer of foil and some insulating tape, ensuring no shorts occur. If the ribbon cable is long, try a camera with a shorter cable
+Lighting. With fluorescent and LED lighting, some forms of illumination seem noisier than others. Try increasingly natural daylight
+- Interface settings. The defaults on the webserver example are not ideal for certain lighting conditions. Try disabling Lens correction and manually adjusting the gain control, AE level and exposure. Tweaking these settings will ellemminate much of the background noise.
+
+##### Gambiarra do ADC2
+https://github.com/esphome/issues/issues/1301
 
 TL;DR: 
 ```sh
