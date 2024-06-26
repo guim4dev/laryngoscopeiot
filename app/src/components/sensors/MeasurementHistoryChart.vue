@@ -7,8 +7,6 @@
 <script setup lang="ts">
 import { computed} from 'vue';
 import type { TimedMeasurement } from '@/services/DeviceApi';
-import { useI18n } from 'vue-i18n';
-const { t } = useI18n();
 
 const props = defineProps<{
     measurements: TimedMeasurement[],
