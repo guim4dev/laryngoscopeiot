@@ -117,7 +117,7 @@ public:
             if (_frame.fb == NULL)
             {
                 log_e("Camera frame failed");
-                return RESPONSE_TRY_AGAIN; // lib will try to get content again
+                return 0; // lib will try to get content again
             }
 
             if (_frame.fb->format != PIXFORMAT_JPEG)
@@ -131,7 +131,7 @@ public:
                     _frame.fb = NULL;
                     _jpg_buf_len = 0;
                     _jpg_buf = NULL;
-                    return RESPONSE_TRY_AGAIN; // lib will try to get content again
+                    return 0; // lib will try to get content again
                 }
                 log_i("JPEG: %lums, %uB", millis() - st, _jpg_buf_len);
             }

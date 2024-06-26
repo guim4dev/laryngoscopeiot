@@ -9,8 +9,7 @@
   "device_awaiting_for_connection": "Aguardando conexão com o dispositivo...",
   "chrome_disclaimer": "Se estiver utilizando o navegador <b>Google Chrome</b>, acesse o link <b>chrome://flags/#block-insecure-private-network-requests</b> e desabilite a opção <b>Block insecure private network requests</b>.",
   "sensors": {
-    "primary_force_label": "Força Primária",
-    "secondary_force_label": "Força Secundária",
+    "tongue_force_label": "Força exercida sobre a língua",
     "failed_to_connect": "Falha ao conectar aos sensores.",
     "connection_closed": "Conexão com os sensores fechada.",
     "teeth_being_touched": "Dentes sendo tocados! Tenha cuidado!",

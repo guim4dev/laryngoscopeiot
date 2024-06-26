@@ -10,7 +10,7 @@
 #include <ESPAsyncWebServer.h>
 
 #define TEETH_BUTTON_PIN 2
-#define PRIMARY_FORCE_SENSOR_PIN 12
+#define TONGUE_FORCE_SENSOR_PIN 12
 #define SECONDARY_FORCE_SENSOR_PIN 13
 
 void setupTeethButton()
@@ -20,26 +20,23 @@ void setupTeethButton()
 
 struct SensorsCapture
 {
-    int primaryForce = 0;
-    int secondaryForce = 0;
+    int tongueForce = 0;
     int teethPressed = 0;
 } sensorsCapture;
 
 void captureSensorsValues()
 {
-    // int primaryForceValue = analogRead(PRIMARY_FORCE_SENSOR_PIN);
+    // int tongueForceValue = analogRead(TONGUE_FORCE_SENSOR_PIN);
     // int secondaryForceValue = analogRead(SECONDARY_FORCE_SENSOR_PIN);
     // Serial.print("Secondary force sensor value: ");
     // Serial.println(secondaryForceValue);
     // TMP: get random value between 0 and 4095
-    int primaryForceValue = random(4095);
-    int secondaryForceValue = random(4095);
+    int tongueForceValue = random(4095);
     int teethSensorValue = !digitalRead(TEETH_BUTTON_PIN);
-    // Serial.print("Primary force sensor value: ");
-    // Serial.println(primaryForceValue);
+    // Serial.print("Tongue force sensor value: ");
+    // Serial.println(tongueForceValue);
 
-    sensorsCapture.primaryForce = primaryForceValue;
-    sensorsCapture.secondaryForce = secondaryForceValue;
+    sensorsCapture.tongueForce = tongueForceValue;
     sensorsCapture.teethPressed = teethSensorValue;
 }
 
@@ -86,7 +83,7 @@ void sensorsLoopHandler()
     }
 
     captureSensorsValues();
-    String sensorData = "{\"primaryForce\": " + String(sensorsCapture.primaryForce) + ", \"secondaryForce\": " + String(sensorsCapture.secondaryForce) + ", \"teethPressed\": " + String(sensorsCapture.teethPressed) + " }";
+    String sensorData = "{\"tongueForce\": " + String(sensorsCapture.tongueForce) + ", \"teethPressed\": " + String(sensorsCapture.teethPressed) + " }";
     sensorEvents.send(sensorData.c_str(), "sensorData", now);
     last_time_sensors = now;
 }

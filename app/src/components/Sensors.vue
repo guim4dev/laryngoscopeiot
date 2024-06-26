@@ -1,8 +1,6 @@
 <template>
-    <div class="sensors-wrapper">
-        <VerticalBarSensor v-for="sensor in sensors" :key="sensor.label" :value="sensor.value.value"
-            :label="sensor.label" :color="sensor.color" />
-    </div>
+    <VerticalBarSensor :value="tongueForceSensorDefinition.value.value"
+        :label="tongueForceSensorDefinition.label" :color="tongueForceSensorDefinition.color" />
 </template>
 
 <script setup lang="ts">
@@ -26,22 +24,14 @@ const getNormalizedForceSensorValue = (value: number) => {
     return Math.round((value / 4095) * 100)
 }
 
-const primaryForceSensor = ref(0)
-const secondaryForceSensor = ref(0)
+const tongueForceSensor = ref(0)
 const teethStartedBeingPressedAt = ref<Date>()
 
-const sensors = [
-    {
-        label: t('sensors.primary_force_label'),
-        value: primaryForceSensor,
-        color: 'red'
-    },
-    {
-        label: t('sensors.secondary_force_label'),
-        value: secondaryForceSensor,
-        color: 'orange'
-    }
-] as const
+const tongueForceSensorDefinition = {
+    label: t('sensors.tongue_force_label'),
+    value: tongueForceSensor,
+    color: 'red'
+} as const
 
 const { status, data, close } = useEventSource(props.src, ["sensorData"], {
     autoReconnect: {
@@ -76,9 +66,12 @@ watch(status, (newStatus) => {
 
 let teethMessageHandler: MessageHandler | null = null
 
+// put message at bottom of page, so it doesn't overlap with the sensors and the video. Space from the bottom should be around 200px
+const messagePositionOffset = window.innerHeight - 150
+
 const handleTeethBeingTouched = () => {
     if (!teethMessageHandler) {
-        teethMessageHandler = ElMessage({ message: t('sensors.teeth_being_touched'), type: 'error', duration: 0 })
+        teethMessageHandler = ElMessage({ message: t('sensors.teeth_being_touched'), type: 'error', duration: 0, offset: messagePositionOffset })
     }
     if (!teethStartedBeingPressedAt.value) {
         teethStartedBeingPressedAt.value = new Date()
@@ -100,9 +93,8 @@ watch(data, (newData) => {
     lastReceivedMessageAt = new Date();
 
     const parsedData = JSON.parse(newData)
-    const { primaryForce, secondaryForce, teethPressed } = parsedData
-    primaryForceSensor.value = getNormalizedForceSensorValue(primaryForce)
-    secondaryForceSensor.value = getNormalizedForceSensorValue(secondaryForce)
+    const { tongueForce, teethPressed } = parsedData
+    tongueForceSensor.value = getNormalizedForceSensorValue(tongueForce)
     if (teethPressed) {
         handleTeethBeingTouched()
     } else {
@@ -122,15 +114,3 @@ onMounted(() => {
     }, 2000) // check every 2 seconds if we are still connected
 })
 </script>
-
-<style scoped>
-.sensors-wrapper {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 2fr;
-    gap: 1rem;
-    align-self: flex-start;
-    justify-self: center;
-    width: 100%
-}
-</style>

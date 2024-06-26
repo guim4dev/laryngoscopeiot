@@ -60,6 +60,9 @@ There could be a number of reasons for this behaviour, and it possibly down to a
 Lighting. With fluorescent and LED lighting, some forms of illumination seem noisier than others. Try increasingly natural daylight
 - Interface settings. The defaults on the webserver example are not ideal for certain lighting conditions. Try disabling Lens correction and manually adjusting the gain control, AE level and exposure. Tweaking these settings will ellemminate much of the background noise.
 
+##### Calibrando o ADC
+https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc_calibration.html
+
 ##### Gambiarra do ADC2
 https://github.com/esphome/issues/issues/1301
 

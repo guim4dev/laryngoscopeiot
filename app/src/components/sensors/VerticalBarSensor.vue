@@ -36,8 +36,6 @@ defineProps({
     justify-content: center;
     gap: 1rem;
     height: 100%;
-    border: 1px solid white;
-    border-radius: 0.5rem;
     padding: 0.5rem;
 }
 
