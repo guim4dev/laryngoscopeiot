@@ -6,7 +6,7 @@
         </div>
 
         <div class="bar" :style="{ height: `${visibleHeight}%`, width: '20px', backgroundColor: color }" />
-        <img v-if="iconPath" :src="iconPath" alt="Force sensor icon" class="icon" />
+        <!-- <img v-if="iconPath" :src="iconPath" alt="Force sensor icon" class="icon" /> -->
     </div>
 </template>
 
@@ -41,7 +41,7 @@ const props = defineProps({
     },
     safeColor: {
         type: String,
-        default: 'green'
+        default: '#39FF14'
     },
     warningColor: {
         type: String,
@@ -75,7 +75,6 @@ const color = computed(() => {
     justify-content: center;
     gap: 1rem;
     height: 100%;
-    padding: 0.5rem;
 }
 
 .details {
@@ -88,8 +87,8 @@ const color = computed(() => {
 }
 
 .label {
-    font-size: 0.75rem;
-    max-width: 100px;
+    font-size: 0.6rem;
+    max-width: 150px;
     text-align: center;
     font-weight: 500;
 }

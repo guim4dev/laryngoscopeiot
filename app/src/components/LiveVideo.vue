@@ -6,6 +6,9 @@
       <ElIcon style="vertical-align: middle">
         <ElIconRefreshRight />
       </ElIcon>
+      <span>
+        {{ $t("camera.reset") }}
+      </span>
   </Elbutton>
   </div>
 </template>
@@ -19,10 +22,11 @@ const src = `${props.cameraServer}/camera/stream`;
 
 const resetingLiveVideo = ref(false);
 
-const cameraLoadDelay = 1000;
+const cameraLoadDelay = 2000; // 2 seconds of delay
 
-const resetLiveVideo = () => {
+const resetLiveVideo = async () => {
   resetingLiveVideo.value = true;
+  // await deviceApi.resetCamera(); // TODO: finish this implementation reset camera
   setTimeout(() => {
     resetingLiveVideo.value = false;
   }, cameraLoadDelay);
@@ -44,12 +48,12 @@ onMounted(() => {
 <style scoped>
 .reset-button {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 1rem;
+  right: 1rem;
   z-index: 1;
 }
 
-.video-wrapper{
+.video-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -60,5 +64,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  border: 1px solid white;
+  border-radius: 16px
 }
 </style>

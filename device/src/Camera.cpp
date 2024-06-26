@@ -94,7 +94,7 @@ public:
             {
                 uint64_t end = (uint64_t)micros();
                 int msDiff = (end - lastAsyncRequest) / 1000;
-                log_printf("Size: %uKB, Time: %ums\n", _jpg_buf_len / 1024, msDiff);
+                // log_printf("Size: %uKB, Time: %ums\n", _jpg_buf_len / 1024, msDiff); // uncomment to see the time taken to send the frame
                 lastAsyncRequest = end;
                 if (_frame.fb->format != PIXFORMAT_JPEG)
                 {
@@ -176,24 +176,6 @@ public:
     }
 };
 
-void streamJpg(AsyncWebServerRequest *request)
-{
-    camera_fb_t *fb = esp_camera_fb_get();
-    if (fb == NULL)
-    {
-        request->send(404);
-        return;
-    }
-    Serial.println("Start JPG streaming\n");
-    AsyncJpegStreamResponse *response = new AsyncJpegStreamResponse();
-    if (!response)
-    {
-        request->send(501);
-        return;
-    }
-    request->send(response);
-}
-
 esp_err_t setupCameraModule()
 {
     camera_config_t config;
@@ -242,6 +224,33 @@ esp_err_t resetCameraModule()
 {
     esp_camera_deinit();
     return setupCameraModule();
+}
+
+int cameraNotFoundCount = 0;
+int cameraNotFoundMax = 5;
+
+void streamJpg(AsyncWebServerRequest *request)
+{
+    camera_fb_t *fb = esp_camera_fb_get();
+    if (fb == NULL)
+    {
+        cameraNotFoundCount++;
+        request->send(404);
+        if (cameraNotFoundCount >= cameraNotFoundMax)
+        {
+            cameraNotFoundCount = 0;
+            resetCameraModule();
+        }
+        return;
+    }
+    Serial.println("Start JPG streaming\n");
+    AsyncJpegStreamResponse *response = new AsyncJpegStreamResponse();
+    if (!response)
+    {
+        request->send(501);
+        return;
+    }
+    request->send(response);
 }
 
 void setupCameraOnServer(AsyncWebServer &server)

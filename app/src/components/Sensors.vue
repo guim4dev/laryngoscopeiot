@@ -1,6 +1,9 @@
 <template>
-    <VerticalBarSensor :value="tongueForceSensorDefinition.value.value"
-        :label="tongueForceSensorDefinition.label" icon-path="/icons/pressure_colorful.png"/>
+    <div class="sensors-wrapper">
+        <VerticalBarSensor :value="tongueForceSensorDefinition.value.value" :max-value="maxForceSensorNormalizedValue"
+            :label="tongueForceSensorDefinition.label" icon-path="/icons/pressure_colorful.png" class="vertical-sensor"/>
+        <MeasurementHistoryChart :measurements="measurementHistory" :max-y="maxForceSensorNormalizedValue" :total-points="measuresHistoryMaxLength" class="measurements-history" />
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -8,20 +11,32 @@ import { useEventSource } from '@vueuse/core'
 import { ElMessage, MessageHandler } from 'element-plus';
 import { watch, ref, onMounted } from "vue";
 import VerticalBarSensor from '@/components/sensors/VerticalBarSensor.vue';
+import MeasurementHistoryChart from '@/components/sensors/MeasurementHistoryChart.vue';
 import { useI18n } from 'vue-i18n';
 import { Haptics } from '@capacitor/haptics';
+import type { Measurement, TimedMeasurement } from '@/services/DeviceApi';
 const { t } = useI18n();
 
+const maxForceSensorNormalizedValue = 100
 const props = defineProps<{ src: string }>();
 const emit = defineEmits(["started", "lostConnection"]);
 
-// TODO:
 // values range from 0 to 4095
-// we need to normalize it to a range from 0g to 100N of force. It should be treated as a log10 scale relationship
-
-// TEMP: for now, we are just normalizing it to a 0 to 100 scale
+// we need to normalize it to a range from 0N to 100N of force.
 const getNormalizedForceSensorValue = (value: number) => {
     return Math.round((value / 4095) * 100)
+}
+
+const measurementHistory = ref<TimedMeasurement[]>([]);
+
+// measurements arrive every 500ms. Wanna hold the measurements for the 30 seconds
+const measuresHistoryMaxLength = 60
+
+const addMeasurementToHistory = (measurement: TimedMeasurement) => {
+    measurementHistory.value.push(measurement)
+    if (measurementHistory.value.length > measuresHistoryMaxLength) {
+        measurementHistory.value.shift()
+    }
 }
 
 const tongueForceSensor = ref(0)
@@ -91,7 +106,7 @@ watch(data, (newData) => {
     if (!newData || newData?.startsWith("connected")) return
     lastReceivedMessageAt = new Date();
 
-    const parsedData = JSON.parse(newData)
+    const parsedData = JSON.parse(newData) as Measurement
     const { tongueForce, teethPressed } = parsedData
     tongueForceSensor.value = getNormalizedForceSensorValue(tongueForce)
     if (teethPressed) {
@@ -99,6 +114,7 @@ watch(data, (newData) => {
     } else {
         handleTeethNotBeingTouched()
     }
+    addMeasurementToHistory({ teethPressed, tongueForce: tongueForceSensor.value, timestamp: lastReceivedMessageAt.getTime() })
 })
 
 onMounted(() => {
@@ -113,3 +129,21 @@ onMounted(() => {
     }, 2000) // check every 2 seconds if we are still connected
 })
 </script>
+
+<style scoped>
+.sensors-wrapper {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.vertical-sensor {
+    max-width: 40%;
+}
+
+.measurements-history {
+    max-width: 500px;
+}
+</style>

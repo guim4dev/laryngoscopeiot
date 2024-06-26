@@ -18,6 +18,7 @@
   "camera": {
     "failed_to_connect": "Falha ao conectar à câmera.",
     "connection_closed": "Conexão com a câmera fechada.",
-    "video_loading": "Carregando vídeo..."
+    "video_loading": "Carregando vídeo...",
+    "reset": "Reiniciar vídeo"
   }
 }

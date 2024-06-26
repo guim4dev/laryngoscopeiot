@@ -1,5 +1,6 @@
 import { createApp } from "vue";
 import { createI18n, type I18nOptions } from "vue-i18n";
+import VueApexCharts from "vue3-apexcharts";
 import router from "./router";
 import * as en from "../locales/en.json";
 import * as ptBr from "../locales/pt-BR.json";
@@ -21,4 +22,6 @@ const app = createApp(App);
 
 app.use(i18n);
 app.use(router);
+app.use(VueApexCharts);
+app.component('apexchart', VueApexCharts)
 app.mount("#app");

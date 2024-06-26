@@ -5,9 +5,9 @@
     </Transition>
     <Transition name="fade" appear>
       <div class="app-layout animated" v-if="isDeviceAlive" v-show="!initialLoading">
-        <LiveVideo key="live-video" v-if="showCamera" v-show="!initialLoading" :cameraServer="server" class="live-video" />
         <Sensors key="sensors" @started="handleSensorsStarted" :src="sensorsEndpoint" @lostConnection="validateIfDeviceIsAlive"
           class="sensors" v-if="showSensors"/>
+        <LiveVideo key="live-video" v-if="showCamera" v-show="!initialLoading" :cameraServer="server" class="live-video" />
       </div>
     </Transition>
     <ElDialog
@@ -56,7 +56,7 @@ const isDeviceAlive = ref(false);
 const initialLoading = ref(true);
 const validatedDeviceAliveCount = ref(0);
 
-const deviceApi = new DeviceApi(deviceIp);
+const deviceApi = DeviceApi.getInstance(deviceIp);
 
 const server = deviceServer || deviceIp ? `http://${deviceIp}` : "";
 const sensorsEndpoint = server ? `${server}/sensors` : "";
@@ -166,22 +166,20 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
+  gap: 1rem;
   height: 100%;
   width: 100%;
-  position: relative;
 }
 
 .sensors {
   height: 15%;
   top: 0;
   left: 0;
-  padding: 1rem 2rem;
-  position: absolute;
   pointer-events: none;
 }
 
 .live-video {
-  position: absolute;
-  height: 100%;
+  height: 85%;
 }
 </style>

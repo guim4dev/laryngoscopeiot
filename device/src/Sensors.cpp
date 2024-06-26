@@ -27,9 +27,6 @@ struct SensorsCapture
 void captureSensorsValues()
 {
     // int tongueForceValue = analogRead(TONGUE_FORCE_SENSOR_PIN);
-    // int secondaryForceValue = analogRead(SECONDARY_FORCE_SENSOR_PIN);
-    // Serial.print("Secondary force sensor value: ");
-    // Serial.println(secondaryForceValue);
     // TMP: get random value between 0 and 4095
     int tongueForceValue = random(4095);
     int teethSensorValue = !digitalRead(TEETH_BUTTON_PIN);
