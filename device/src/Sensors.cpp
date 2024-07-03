@@ -74,7 +74,7 @@ void sensorsLoopHandler()
     }
 
     captureSensorsValues();
-    String sensorData = "{\"tongueForce\": " + String(sensorsCapture.tongueForce) + ", \"teethPressed\": " + String(sensorsCapture.teethPressed) + " }";
+    String sensorData = "{\"tongueForce\": " + String(sensorsCapture.tongueForce) + ", \"teethPressed\": " + String(sensorsCapture.teethPressed) + ", \"timestamp\": " + String(now) + " }";
     sensorEvents.send(sensorData.c_str(), "sensorData", now);
     last_time_sensors = now;
 }
