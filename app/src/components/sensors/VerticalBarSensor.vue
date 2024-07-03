@@ -2,7 +2,7 @@
     <div class="sensor-wrapper">
         <div class="details">
             <span class="label">{{ label }}</span>
-            <div v-if="showValue" class="value">{{ value }}N</div>
+            <div v-if="showValue" class="value">{{ `${value}${reachedMax ? '+' : ''}` }} N</div>
         </div>
 
         <div class="bar" :style="{ height: `${visibleHeight}%`, width: '20px', backgroundColor: color }" />
@@ -53,7 +53,8 @@ const props = defineProps({
     }
 }); // this number is a number from 0 to 100
 
-const visibleHeight = computed(() => Math.max(props.value, 5)) // height needs to be at least 5%
+const visibleHeight = computed(() => (Math.max(props.value, 0.05*props.maxValue)/props.maxValue)*100) // height needs to be at least 5%
+const reachedMax = computed(() => props.value >= props.maxValue);
 
 const color = computed(() => {
     if (props.value < props.warningThreshold) {

@@ -1,6 +1,6 @@
 <template>
     <div class="sensors-wrapper">
-        <VerticalBarSensor :value="tongueForceSensorDefinition.value.value" :max-value="maxForceSensorNormalizedValue"
+        <VerticalBarSensor :value="tongueForceSensorDefinition.value.value" :max-value="maxForceSensorNormalizedValue" :danger-threshold="dangerThreshold" :warning-threshold="warningThreashold"
             :label="tongueForceSensorDefinition.label" icon-path="/icons/pressure_colorful.png" class="vertical-sensor"/>
         <MeasurementHistoryChart :measurements="measurementHistory" :max-y="maxForceSensorNormalizedValue" :total-points="measuresHistoryMaxLength" class="measurements-history" />
     </div>
@@ -17,14 +17,16 @@ import { Haptics } from '@capacitor/haptics';
 import type { Measurement, TimedMeasurement } from '@/services/DeviceApi';
 const { t } = useI18n();
 
-const maxForceSensorNormalizedValue = 100
+const maxForceSensorNormalizedValue = 20 // 20N
+const warningThreashold = 10
+const dangerThreshold = 15
 const props = defineProps<{ src: string }>();
 const emit = defineEmits(["started", "lostConnection"]);
 
 // values range from 0 to 4095
-// we need to normalize it to a range from 0N to 100N of force.
+// we need to normalize it to a range from 0N to 20N of force.
 const getNormalizedForceSensorValue = (value: number) => {
-    return Math.round((value / 4095) * 100)
+    return Math.round((value / 4095) * maxForceSensorNormalizedValue)
 }
 
 const measurementHistory = ref<TimedMeasurement[]>([]);
