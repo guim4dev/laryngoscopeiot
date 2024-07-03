@@ -33,7 +33,7 @@ void captureSensorsValues()
 
 AsyncEventSource sensorEvents("/sensors");
 
-unsigned long sensors_delay = 500; // 0.5 second delay
+unsigned long sensors_delay = 300; // 0.3 second delay
 bool connectedToSensors = false;
 
 void setupSensorsOnWebServer(AsyncWebServer &server)
