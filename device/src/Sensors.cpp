@@ -10,8 +10,7 @@
 #include <ESPAsyncWebServer.h>
 
 #define TEETH_BUTTON_PIN 2
-#define TONGUE_FORCE_SENSOR_PIN 12
-#define SECONDARY_FORCE_SENSOR_PIN 13
+#define TONGUE_FORCE_SENSOR_PIN 33
 
 void setupTeethButton()
 {
@@ -26,13 +25,8 @@ struct SensorsCapture
 
 void captureSensorsValues()
 {
-    // int tongueForceValue = analogRead(TONGUE_FORCE_SENSOR_PIN);
-    // TMP: get random value between 0 and 4095
-    int tongueForceValue = random(4095);
+    int tongueForceValue = analogRead(TONGUE_FORCE_SENSOR_PIN);
     int teethSensorValue = !digitalRead(TEETH_BUTTON_PIN);
-    // Serial.print("Tongue force sensor value: ");
-    // Serial.println(tongueForceValue);
-
     sensorsCapture.tongueForce = tongueForceValue;
     sensorsCapture.teethPressed = teethSensorValue;
 }
