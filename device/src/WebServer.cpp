@@ -14,9 +14,7 @@ std::function<void()> globalServerResetCallback = NULL;
 
 void resetServerTask(void *z)
 {
-    safeDelay(1000); // wait one second before resetting the server
-    Serial.println("Resetting server...");
-    Serial.flush();
+    safeDelay(1000);     // wait one second before resetting the server
     globalServer->end(); // end the server for a clean restart
     if (globalServerResetCallback != NULL)
     {
@@ -24,9 +22,7 @@ void resetServerTask(void *z)
     }
     safeDelay(1000);       // wait one second for the server to end
     globalServer->begin(); // begin the server again
-    Serial.println("Server resetted.");
-    Serial.flush();
-    vTaskDelete(NULL); // delete the task
+    vTaskDelete(NULL);     // delete the task
 }
 
 void applyServerDefaults(AsyncWebServer &server)

@@ -207,16 +207,6 @@ esp_err_t setupCameraModule()
 
     // Camera init
     esp_err_t err = esp_camera_init(&config);
-    Serial.println("CAMERA INIT ERR: " + String(err));
-    if (err != ESP_OK)
-    {
-        Serial.printf("Camera init failed with error 0x%x", err);
-    }
-    else
-    {
-        Serial.println("Camera setup done successfully");
-    }
-    Serial.flush();
     return err;
 }
 
@@ -243,7 +233,6 @@ void streamJpg(AsyncWebServerRequest *request)
         }
         return;
     }
-    Serial.println("Start JPG streaming\n");
     AsyncJpegStreamResponse *response = new AsyncJpegStreamResponse();
     if (!response)
     {
@@ -271,7 +260,6 @@ void setupCameraOnServer(AsyncWebServer &server)
 
     server.on("/camera/reset", HTTP_GET, [](AsyncWebServerRequest *request)
               {
-                        Serial.println("Resetting camera...");
                         esp_err_t cameraRes = resetCameraModule();
                         if (cameraRes != ESP_OK)
                         {
@@ -279,18 +267,12 @@ void setupCameraOnServer(AsyncWebServer &server)
                             return;
                         }
                         request->send(200, "text/plain", "Camera reset done"); });
-
-    Serial.println("Camera handlers injected into webServer");
 }
 
 void setupCamera(AsyncWebServer &server)
 {
-    Serial.println("Camera setup starting...");
-
     setupCameraModule();
     setupCameraOnServer(server);
-
-    Serial.println("Camera setup done");
 }
 
 void cameraResetHandler()
@@ -298,7 +280,5 @@ void cameraResetHandler()
     esp_err_t cameraRes = resetCameraModule();
     if (cameraRes != ESP_OK)
     {
-        Serial.println("Camera reset failed");
-        Serial.flush();
     }
 }

@@ -20,6 +20,12 @@ void setupBuiltinLed()
     setupedBuiltinLed = true;
 }
 
+void turnOnBuiltinLed()
+{
+    setupBuiltinLed();
+    digitalWrite(LED_BUILTIN, HIGH);
+}
+
 void blinkNTimes(int n)
 {
     setupBuiltinLed();

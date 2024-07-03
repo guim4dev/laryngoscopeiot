@@ -40,23 +40,16 @@ void setupSensorsOnWebServer(AsyncWebServer &server)
 {
     sensorEvents.onConnect([](AsyncEventSourceClient *client)
                            {
-                               if (client->lastId())
-                               {
-                                   Serial.printf("Client reconnected to sensorEvents! Last message ID that it got is: %u\n", client->lastId());
-                               }
-
                                client->send("connected", NULL, millis(), 10000);
                                connectedToSensors = true; });
 
     server.addHandler(&sensorEvents);
-    Serial.println("Sensors SSE handler injected into webServer");
 }
 
 void setupSensors(AsyncWebServer &server)
 {
     setupTeethButton();
     setupSensorsOnWebServer(server);
-    Serial.println("Sensors setup done");
 }
 
 int last_time_sensors = 0;
@@ -82,5 +75,4 @@ void sensorsLoopHandler()
 void sensorsResetHandler()
 {
     connectedToSensors = false;
-    Serial.println("Sensors resetted");
 }
