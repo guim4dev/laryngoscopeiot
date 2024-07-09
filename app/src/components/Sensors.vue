@@ -1,8 +1,11 @@
 <template>
     <div class="sensors-wrapper">
-        <VerticalBarSensor :value="tongueForceSensorDefinition.value.value" :max-value="maxForceSensorNormalizedValue" :danger-threshold="dangerThreshold" :warning-threshold="warningThreashold"
-            :label="tongueForceSensorDefinition.label" icon-path="/icons/pressure_colorful.png" class="vertical-sensor"/>
-        <MeasurementHistoryChart :measurements="measurementHistory" :max-y="maxForceSensorNormalizedValue" :total-points="measuresHistoryMaxLength" class="measurements-history" />
+        <VerticalBarSensor :value="tongueForceSensorDefinition.value.value" :max-value="maxForceSensorNormalizedValue"
+            :danger-threshold="dangerThreshold" :warning-threshold="warningThreashold"
+            :label="tongueForceSensorDefinition.label" icon-path="/icons/pressure_colorful.png"
+            class="vertical-sensor" />
+        <MeasurementHistoryChart :measurements="measurementHistory" :max-y="maxForceSensorNormalizedValue"
+            :total-points="measuresHistoryMaxLength" class="measurements-history" />
     </div>
 </template>
 
@@ -31,8 +34,8 @@ const getNormalizedForceSensorValue = (value: number) => {
 
 const measurementHistory = ref<TimedMeasurement[]>([]);
 
-// measurements arrive every 500ms. Wanna hold the measurements for the 30 seconds
-const measuresHistoryMaxLength = 60
+// measurements arrive every 300ms. Wanna hold the measurements for the last 15 seconds
+const measuresHistoryMaxLength = 50
 
 const addMeasurementToHistory = (measurement: TimedMeasurement) => {
     measurementHistory.value.push(measurement)
