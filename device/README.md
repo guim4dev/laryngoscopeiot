@@ -78,11 +78,11 @@ TL;DR:
 
 Portas disponiveis para captura de dados:
 
-GPIO 2, GPIO 12, GPIO 13
+GPIO 2, GPIO 12, GPIO 13 - leitura digital
+GPIO 33 - leitura analogica
 
 GPIO 2 - Interruptor
-GPIO 12 - Force Sensor 1
-GPIO 13 - Force Sensor 2
+GPIO 33 - FSR
 
 #### Problema:
 
